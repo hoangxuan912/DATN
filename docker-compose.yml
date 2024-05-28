@@ -19,7 +19,7 @@ services:
       - mysql_data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=base_core
+      - MYSQL_DATABASE=base_core_v3
 
 volumes:
   mysql_data:
