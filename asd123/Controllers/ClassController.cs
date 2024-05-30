@@ -1,9 +1,9 @@
 ﻿using asd123.Model;
-using asd123.Presenters.Major;
+using asd123.Presenters.Class;
 using asd123.Presenters.Subject;
 using asd123.Services;
 using asd123.Ultil;
-using asd123.UseCase.Major.Crud;
+using asd123.UseCase.Class.Crud;
 using asd123.UseCase.Subject.Crud;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -13,20 +13,21 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SubjectController : ControllerBase
+    public class ClassController : ControllerBase
     {
-        CrudSubjectFlow workflow;
+        CrudClassFlow workflow;
         private readonly IUnitOfWork uow;
         private readonly IMapper _map;
-        public SubjectController(IUnitOfWork _uow, IMapper map)
+        public ClassController(IUnitOfWork _uow, IMapper map)
         {
             uow = _uow;
             _map = map;
-            workflow = new CrudSubjectFlow(uow);
+            workflow = new CrudClassFlow(uow);
         }
+
         [HttpGet]
         [Route("GetAll")]
-        public IActionResult GetAllSubject()
+        public IActionResult GetAllClass()
         {
             var result = workflow.List();
             if (result.Status == Message.SUCCESS)
@@ -36,8 +37,9 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
+
         [HttpPost]
-        public IActionResult CreateSubject(CreateSubjectPresenter model)
+        public IActionResult CreateClass(CreateClassPresenter model)
         {
             var major_response = workflow.FindByName(model.MajorName);
             if (major_response.Status == Message.ERROR)
@@ -50,7 +52,7 @@ namespace asd123.Controllers
             {
                 return BadRequest("Invalid Major data.");
             }
-            var map = _map.Map<Subject>(model);
+            var map = _map.Map<Class>(model);
             map.MajorId = major.Id;
             map.CreatedAt = DateTime.Now;
             var result = workflow.Create(map);
@@ -63,9 +65,9 @@ namespace asd123.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateSubject(UpdateSubjectPresenter model, string code)
+        public IActionResult UpdateClass(UpdateSubjectPresenter model, string code)
         {
-            var map = _map.Map<Subject>(model);
+            var map = _map.Map<Class>(model);
             map.UpdatedAt = DateTime.Now;
             var result = workflow.Update(map, code);
             if (result.Status == Message.SUCCESS)
@@ -75,17 +77,6 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
-
-        [HttpDelete]
-        public IActionResult Delete(string code)
-        {
-            var result = workflow.Delete(code);
-            if (result.Status == Message.SUCCESS)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
-        }
     }
+
 }

@@ -10,6 +10,7 @@ namespace asd123.Services
         IDepartmentService Departments { get; }
         IMajor Majors { get; }
         ISubject Subjects { get; }
+        IClass Class { get; }
         int SaveChanges();
         Task SaveChangesAsync();
         IExecutionStrategy CreateExecutionStrategy();
@@ -25,12 +26,14 @@ namespace asd123.Services
         public IDepartmentService Departments { get; }
         public IMajor Majors { get; }
         public ISubject Subjects { get; }
+        public IClass Class { get; }
         public UnitOfWork(ApplicationDbContext _dbContext)
         {
             dbContext = _dbContext;
             Departments = new DepartmentService(dbContext);
             Majors = new MajorService(dbContext);
             Subjects = new SubjectService(dbContext);
+            Class = new ClassService(dbContext);
         }
 
         public IExecutionStrategy CreateExecutionStrategy()

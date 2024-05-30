@@ -2,24 +2,21 @@
 using asd123.Services;
 using asd123.Ultil;
 using Microsoft.EntityFrameworkCore;
-using System;
 
-namespace asd123.UseCase.Subject.Crud
+namespace asd123.UseCase.Class.Crud
 {
-    public class CrudSubjectFlow
+    public class CrudClassFlow
     {
-        private readonly IUnitOfWork unitOfWork;
-
-        public CrudSubjectFlow(IUnitOfWork unitOfWork)
+        private readonly IUnitOfWork _uow;
+        public CrudClassFlow(IUnitOfWork uow)
         {
-            this.unitOfWork = unitOfWork;
+            _uow = uow;
         }
-
         public ResponseData List()
         {
             try
             {
-                var subjects = unitOfWork.Subjects.FindAll();
+                var subjects = _uow.Class.FindAll();
                 return new ResponseData(Message.SUCCESS, subjects);
             }
             catch (Exception ex)
@@ -27,29 +24,27 @@ namespace asd123.UseCase.Subject.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-
         public ResponseData FindByName(string name)
         {
             try
             {
-                var existingMajor = unitOfWork.Majors.GetCodeMajor(name);
-                if (existingMajor == null)
+                var existing_major = _uow.Majors.GetCodeMajor(name);
+                if (existing_major == null)
                 {
-                    return new ResponseData(Message.ERROR, "Major not found");
+                    return new ResponseData(Message.ERROR, "Class not found");
                 }
-                return new ResponseData(Message.SUCCESS, existingMajor);
+                return new ResponseData(Message.SUCCESS, existing_major);
             }
             catch (Exception ex)
             {
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-
-        public ResponseData Create(asd123.Model.Subject subject)
+        public ResponseData Create(asd123.Model.Class cls)
         {
             try
             {
-                var result = unitOfWork.Subjects.Create(subject);
+                var result = _uow.Class.Create(cls);
                 return new ResponseData(Message.SUCCESS, result);
             }
             catch (Exception ex)
@@ -57,24 +52,22 @@ namespace asd123.UseCase.Subject.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-
-        public ResponseData Update(asd123.Model.Subject subject, string code)
+        public ResponseData Update(asd123.Model.Class cls, string code)
         {
             try
             {
-                var existingSubject = unitOfWork.Subjects.GetCodeSubject(code);
-                if (existingSubject == null)
+                var existing_class = _uow.Class.GetCodeClass(code);
+                if (existing_class == null)
                 {
-                    return new ResponseData(Message.ERROR, "Subject not found");
+                    return new ResponseData(Message.ERROR, "Class not found");
                 }
 
-                existingSubject.Code = subject.Code;
-                existingSubject.Name = subject.Name;
-                existingSubject.TotalCreadits = subject.TotalCreadits;
-                existingSubject.UpdatedAt = subject.UpdatedAt;
-                unitOfWork.SaveChanges();
+                existing_class.Code = cls.Code;
+                existing_class.Name = cls.Name;
+                existing_class.UpdatedAt = cls.UpdatedAt;
+                _uow.SaveChanges();
 
-                return new ResponseData(Message.SUCCESS, existingSubject);
+                return new ResponseData(Message.SUCCESS, existing_class);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -85,18 +78,17 @@ namespace asd123.UseCase.Subject.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-
         public ResponseData Delete(string code)
         {
             try
             {
-                var existingSubject = unitOfWork.Subjects.GetCodeSubject(code);
-                if (existingSubject == null)
+                var existing_class = _uow.Class.GetCodeClass(code);
+                if (existing_class == null)
                 {
-                    return new ResponseData(Message.ERROR, "Subject not found");
+                    return new ResponseData(Message.ERROR, "Class not found");
                 }
 
-                var result = unitOfWork.Subjects.Delete(existingSubject.Id);
+                var result = _uow.Class.Delete(existing_class.Id);
                 return new ResponseData(Message.SUCCESS, result);
             }
             catch (Exception ex)

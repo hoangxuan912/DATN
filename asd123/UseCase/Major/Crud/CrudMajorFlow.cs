@@ -2,70 +2,106 @@
 using asd123.Services;
 using asd123.Ultil;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace asd123.UseCase.Major.Crud
 {
     public class CrudMajorFlow
     {
         private readonly IUnitOfWork unitOfWork;
+
         public CrudMajorFlow(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
         }
+
         public ResponseData List()
         {
-            var users = unitOfWork.Majors.FindAll();
-
-            return new ResponseData(Message.SUCCESS, users);
+            try
+            {
+                var majors = unitOfWork.Majors.FindAll();
+                return new ResponseData(Message.SUCCESS, majors);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
         }
 
         public ResponseData FindByName(string name)
         {
-            var existingDepartmen = unitOfWork.Departments.GetCodeDepartment(name);
-            if (existingDepartmen == null)
+            try
             {
-                return new ResponseData(Message.ERROR, "Department not found");
+                var existingDepartment = unitOfWork.Departments.GetCodeDepartment(name);
+                if (existingDepartment == null)
+                {
+                    return new ResponseData(Message.ERROR, "Department not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingDepartment);
             }
-            return new ResponseData(Message.SUCCESS, existingDepartmen);
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
         }
 
         public ResponseData Create(asd123.Model.Major major)
         {
-            var result = unitOfWork.Majors.Create(major);
-
-            return new ResponseData(Message.SUCCESS, result);
-        }
-        public ResponseData Update(asd123.Model.Major major, string code)
-        {
-            var existingMajor = unitOfWork.Majors.GetCodeMajor(code);
-            if (existingMajor == null)
-            {
-                return new ResponseData(Message.ERROR, "Major not found");
-            }
             try
             {
+                var result = unitOfWork.Majors.Create(major);
+                return new ResponseData(Message.SUCCESS, result);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        public ResponseData Update(asd123.Model.Major major, string code)
+        {
+            try
+            {
+                var existingMajor = unitOfWork.Majors.GetCodeMajor(code);
+                if (existingMajor == null)
+                {
+                    return new ResponseData(Message.ERROR, "Major not found");
+                }
+
                 existingMajor.Code = major.Code;
                 existingMajor.Name = major.Name;
                 existingMajor.UpdatedAt = major.UpdatedAt;
                 unitOfWork.SaveChanges();
+
                 return new ResponseData(Message.SUCCESS, existingMajor);
             }
             catch (DbUpdateConcurrencyException)
             {
-
                 return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
             }
-
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
         }
+
         public ResponseData Delete(string code)
         {
-            var existingDepartmen = unitOfWork.Majors.GetCodeMajor(code);
-            if (existingDepartmen == null)
+            try
             {
-                return new ResponseData(Message.ERROR, "Department not found");
+                var existingMajor = unitOfWork.Majors.GetCodeMajor(code);
+                if (existingMajor == null)
+                {
+                    return new ResponseData(Message.ERROR, "Major not found");
+                }
+
+                var result = unitOfWork.Majors.Delete(existingMajor.Id);
+                return new ResponseData(Message.SUCCESS, result);
             }
-            var result = unitOfWork.Majors.Delete(existingDepartmen.Id);
-            return new ResponseData(Message.SUCCESS, result);
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }
