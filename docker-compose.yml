@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  db:
+    container_name: base_db
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=base_core
   # web:
   #   container_name: base_web
   #   build: .
@@ -9,17 +19,9 @@ services:
   #   environment:
   #     - ASPNETCORE_ENVIRONMENT=Production
   #     - ConnectionStrings__Default=Server=base_db;Port=3307;Database=base_core;User=root;Password=123456
+  #   depends_on:
+  #     - db
 
-  db:
-    container_name: base_db
-    image: mysql:latest
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=base_core_v3
 
 volumes:
   mysql_data:
