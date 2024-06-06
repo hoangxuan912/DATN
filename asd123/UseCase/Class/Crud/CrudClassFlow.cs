@@ -31,7 +31,7 @@ namespace asd123.UseCase.Class.Crud
                 var existing_major = _uow.Majors.GetCodeMajor(name);
                 if (existing_major == null)
                 {
-                    return new ResponseData(Message.ERROR, "Class not found");
+                    return new ResponseData(Message.ERROR, "Major not found");
                 }
                 return new ResponseData(Message.SUCCESS, existing_major);
             }

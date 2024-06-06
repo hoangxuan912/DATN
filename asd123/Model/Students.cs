@@ -8,6 +8,7 @@ namespace asd123.Model
 {
     public class Students : BaseSchema
     {
+        public string Code { get; set; }
         public string Name { get; set; }
         public string Sex { get; set; }
         public DateOnly Dob { get; set; }
