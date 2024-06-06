@@ -65,6 +65,10 @@ public class CrudStudentFlow
 
             existing_student.Code = stu.Code;
             existing_student.Name = stu.Name;
+            existing_student.Sex = stu.Sex;
+            existing_student.Dob = stu.Dob;
+            existing_student.HomeTown = stu.HomeTown;
+            existing_student.ContactNumber = stu.ContactNumber;
             existing_student.UpdatedAt = stu.UpdatedAt;
             _uow.SaveChanges();
 
@@ -73,6 +77,24 @@ public class CrudStudentFlow
         catch (DbUpdateConcurrencyException)
         {
             return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
+        }
+        catch (Exception ex)
+        {
+            return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+        }
+    }
+    public ResponseData Delete(string code)
+    {
+        try
+        {
+            var existing_student = _uow.Students.getCodeStudents(code);
+            if (existing_student == null)
+            {
+                return new ResponseData(Message.ERROR, "Student not found");
+            }
+
+            var result = _uow.Students.Delete(existing_student.Id);
+            return new ResponseData(Message.SUCCESS, result);
         }
         catch (Exception ex)
         {
