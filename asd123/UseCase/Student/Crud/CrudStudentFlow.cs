@@ -30,10 +30,6 @@ public class CrudStudentFlow
         try
         {
             var existingClass = _uow.Class.GetCodeClass(name);
-            if (existingClass == null)
-            {
-                return new ResponseData(Message.ERROR, "Class not found");
-            }
             return new ResponseData(Message.SUCCESS, existingClass);
         }
         catch (Exception ex)
@@ -41,7 +37,7 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
-    public ResponseData Create(asd123.Model.Students sts)
+    public ResponseData Create(Model.Students sts)
     {
         try
         {
@@ -53,26 +49,21 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
-    public ResponseData Update(asd123.Model.Students stu, string code)
+    public ResponseData Update(Model.Students stu, string code)
     {
+        var existingStudent = _uow.Students.getCodeStudents(code);
         try
         {
-            var existing_student = _uow.Students.getCodeStudents(code);
-            if (existing_student == null)
-            {
-                return new ResponseData(Message.ERROR, "Student not found");
-            }
-
-            existing_student.Code = stu.Code;
-            existing_student.Name = stu.Name;
-            existing_student.Sex = stu.Sex;
-            existing_student.Dob = stu.Dob;
-            existing_student.HomeTown = stu.HomeTown;
-            existing_student.ContactNumber = stu.ContactNumber;
-            existing_student.UpdatedAt = stu.UpdatedAt;
+            existingStudent.Code = stu.Code;
+            existingStudent.Name = stu.Name;
+            existingStudent.Sex = stu.Sex;
+            existingStudent.Dob = stu.Dob;
+            existingStudent.HomeTown = stu.HomeTown;
+            existingStudent.ContactNumber = stu.ContactNumber;
+            existingStudent.UpdatedAt = stu.UpdatedAt;
             _uow.SaveChanges();
 
-            return new ResponseData(Message.SUCCESS, existing_student);
+            return new ResponseData(Message.SUCCESS, existingStudent);
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -83,17 +74,15 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+    //TODO: asdasdasd
+    
     public ResponseData Delete(string code)
     {
         try
         {
-            var existing_student = _uow.Students.getCodeStudents(code);
-            if (existing_student == null)
-            {
-                return new ResponseData(Message.ERROR, "Student not found");
-            }
+            var existingStudent = _uow.Students.getCodeStudents(code);
 
-            var result = _uow.Students.Delete(existing_student.Id);
+            var result = _uow.Students.Delete(existingStudent.Id);
             return new ResponseData(Message.SUCCESS, result);
         }
         catch (Exception ex)
