@@ -23,7 +23,7 @@ namespace asd123.Controllers
             workflow = new CrudDepartmentFlow(uow,_map);
         }
         [HttpGet]
-        [Route("GetAll")]
+        [Route("get_all_department")]
         public IActionResult GetAllDepartment()
         {
             var result = workflow.List();
@@ -35,10 +35,10 @@ namespace asd123.Controllers
             return BadRequest(result);
         }
         [HttpGet]
-        [Route("GetDepartmentByName")]
-        public IActionResult GetDepartmentByName(string name)
+        [Route("get_department_by_id")]
+        public IActionResult GetDepartmentByName(int id)
         {
-            var result = workflow.FindByName(name);
+            var result = workflow.FindById(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result.Result);
@@ -50,6 +50,11 @@ namespace asd123.Controllers
         [HttpPost]
         public IActionResult CreateDepartment(CreateDepartmentPresenter model)
         {
+            var existingDepartment = uow.Departments.GetCodeDepartment(model.Code);
+            if (existingDepartment != null)
+            {
+                return BadRequest("Department with the same code already exists.");
+            }
             var map = _map.Map<Department>(model);
             map.CreatedAt = DateTime.Now;
             var result = workflow.Create(map);
@@ -61,12 +66,23 @@ namespace asd123.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut]
-        public IActionResult UpdateDepartment(CreateDepartmentPresenter model, string code)
+        [HttpPut("{id}")]
+        public IActionResult UpdateDepartment(CreateDepartmentPresenter model, int id)
         {
+            var existingDepartmentResult = workflow.FindById(id);
+            if (existingDepartmentResult.Status != Message.SUCCESS)
+            {
+                return NotFound("Department not found.");
+            }
+            var existingAnotherDepartment = uow.Departments.GetCodeDepartment(model.Code);
+            if (existingAnotherDepartment != null)
+            {
+                return BadRequest("Department with the same code already exists.");
+            }
             var map = _map.Map<Department>(model);
+            map.Id = id;
             map.UpdatedAt = DateTime.Now;
-            var result = workflow.Update(map, code);
+            var result = workflow.Update(map);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);
@@ -76,9 +92,9 @@ namespace asd123.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(string code)
+        public IActionResult Delete(int id)
         {
-            var result = workflow.Delete(code);
+            var result = workflow.Delete(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);

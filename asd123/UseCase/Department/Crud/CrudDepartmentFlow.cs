@@ -47,11 +47,11 @@ namespace asd123.UseCase.Department.Crud
             }
         }
 
-        public ResponseData FindByName(string name)
+        public ResponseData FindById(int id)
         {
             try
             {
-                var existingDepartment = unitOfWork.Departments.GetCodeDepartment(name);
+                var existingDepartment = unitOfWork.Departments.FindOne(id);
                 if (existingDepartment == null)
                 {
                     return new ResponseData(Message.ERROR, "Department not found");
@@ -64,24 +64,14 @@ namespace asd123.UseCase.Department.Crud
             }
         }
 
-        public ResponseData Update(asd123.Model.Department department, string code)
+        public ResponseData Update(asd123.Model.Department department)
         {
             try
             {
-                var existingDepartment = unitOfWork.Departments.GetCodeDepartment(code);
-                if (existingDepartment == null)
-                {
-                    return new ResponseData(Message.ERROR, "Department not found");
-                }
-
-                mapper.Map(department, existingDepartment);  // Use AutoMapper to map properties
+                unitOfWork.Departments.Update(department);
                 unitOfWork.SaveChanges();
 
-                return new ResponseData(Message.SUCCESS, existingDepartment);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
+                return new ResponseData(Message.SUCCESS, department);
             }
             catch (Exception ex)
             {
@@ -89,17 +79,11 @@ namespace asd123.UseCase.Department.Crud
             }
         }
 
-        public ResponseData Delete(string code)
+        public ResponseData Delete(int id)
         {
             try
             {
-                var existingDepartment = unitOfWork.Departments.GetCodeDepartment(code);
-                if (existingDepartment == null)
-                {
-                    return new ResponseData(Message.ERROR, "Department not found");
-                }
-
-                var result = unitOfWork.Departments.Delete(existingDepartment.Id);
+                var result = unitOfWork.Departments.Delete(id);
                 return new ResponseData(Message.SUCCESS, result);
             }
             catch (Exception ex)

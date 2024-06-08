@@ -26,7 +26,7 @@ namespace asd123.Controllers
         }
         [HttpGet]
         [Route("GetAll")]
-        public IActionResult GetAllDepartment()
+        public IActionResult GetAllMajor()
         {
             var result = workflow.List();
             if (result.Status == Message.SUCCESS)
@@ -39,6 +39,11 @@ namespace asd123.Controllers
         [HttpPost]
         public IActionResult CreateMajor(CreateMajorPresenter model)
         {
+            var majorResponse = workflow.FindCodeByName(model.Code);
+            if (majorResponse.Status == Message.ERROR)
+            {
+                return BadRequest("existing code name");
+            }
             var departmentResponse = workflow.FindByName(model.DepartmentName);
             if (departmentResponse.Status == Message.ERROR)
             {
@@ -63,7 +68,7 @@ namespace asd123.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateMajor(CreateMajorPresenter model, string code)
+        public IActionResult UpdateMajor(UpdateMajorPresenter model, string code)
         {
             var map = _map.Map<Major>(model);
             map.UpdatedAt = DateTime.Now;
@@ -77,9 +82,9 @@ namespace asd123.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(string code)
+        public IActionResult Delete(int id)
         {
-            var result = workflow.Delete(code);
+            var result = workflow.Delete(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);

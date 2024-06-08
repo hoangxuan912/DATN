@@ -27,7 +27,22 @@ namespace asd123.UseCase.Major.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-        
+        public ResponseData FindCodeByName(string name)
+        {
+            try
+            {
+                var existingDepartment = unitOfWork.Majors.GetCodeMajor(name);
+                if (existingDepartment == null)
+                {
+                    return new ResponseData(Message.SUCCESS, existingDepartment);
+                }
+                return new ResponseData(Message.ERROR, "existing code name");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
         public ResponseData FindByName(string name)
         {
             try
@@ -90,17 +105,11 @@ namespace asd123.UseCase.Major.Crud
             }
         }
 
-        public ResponseData Delete(string code)
+        public ResponseData Delete(int id)
         {
             try
             {
-                var existingMajor = unitOfWork.Majors.GetCodeMajor(code);
-                if (existingMajor == null)
-                {
-                    return new ResponseData(Message.ERROR, "Major not found");
-                }
-
-                var result = unitOfWork.Majors.Delete(existingMajor.Id);
+                var result = unitOfWork.Majors.Delete(id);
                 return new ResponseData(Message.SUCCESS, result);
             }
             catch (Exception ex)
