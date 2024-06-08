@@ -68,16 +68,37 @@ namespace asd123.UseCase.Department.Crud
         {
             try
             {
-                unitOfWork.Departments.Update(department);
+                var existingAnotherDepartment = unitOfWork.Departments.GetCodeDepartment(department.Code);
+                if (existingAnotherDepartment != null)
+                {
+                    return new ResponseData(Message.ERROR, "Department with the same code already exists.");
+                }
+        
+                // Kiểm tra sự tồn tại của phòng ban cần cập nhật trước khi thực hiện các thao tác
+                var existingDepartment = unitOfWork.Departments.FindOne(department.Id);
+                if (existingDepartment == null)
+                {
+                    return new ResponseData(Message.ERROR, "Department not found.");
+                }
+
+                // Cập nhật thông tin của phòng ban
+                existingDepartment.Code = department.Code;
+                existingDepartment.Name = department.Name;
+                existingDepartment.Address = department.Address;
+                existingDepartment.PhoneNumber = department.PhoneNumber;
+                existingDepartment.UpdatedAt = department.UpdatedAt;
+
+                unitOfWork.Departments.Update(existingDepartment);
                 unitOfWork.SaveChanges();
 
-                return new ResponseData(Message.SUCCESS, department);
+                return new ResponseData(Message.SUCCESS, existingDepartment);
             }
             catch (Exception ex)
             {
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
+
 
         public ResponseData Delete(int id)
         {

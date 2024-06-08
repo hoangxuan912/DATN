@@ -74,14 +74,13 @@ namespace asd123.Controllers
             {
                 return NotFound("Department not found.");
             }
-            var existingAnotherDepartment = uow.Departments.GetCodeDepartment(model.Code);
-            if (existingAnotherDepartment != null)
-            {
-                return BadRequest("Department with the same code already exists.");
-            }
+    
+            var existingDepartment = existingDepartmentResult.Result;
+
             var map = _map.Map<Department>(model);
-            map.Id = id;
+            map.Id = id; // Đặt ID của phòng ban mới
             map.UpdatedAt = DateTime.Now;
+
             var result = workflow.Update(map);
             if (result.Status == Message.SUCCESS)
             {
@@ -90,6 +89,8 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
+
+
 
         [HttpDelete]
         public IActionResult Delete(int id)
