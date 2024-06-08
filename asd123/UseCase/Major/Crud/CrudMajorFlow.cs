@@ -27,32 +27,16 @@ namespace asd123.UseCase.Major.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-        public ResponseData FindCodeByName(string name)
+        public ResponseData FindById(int id)
         {
             try
             {
-                var existingDepartment = unitOfWork.Majors.GetCodeMajor(name);
-                if (existingDepartment == null)
+                var existingMajor = unitOfWork.Majors.FindOne(id);
+                if (existingMajor == null)
                 {
-                    return new ResponseData(Message.SUCCESS, existingDepartment);
+                    return new ResponseData(Message.ERROR, "Major not found");
                 }
-                return new ResponseData(Message.ERROR, "existing code name");
-            }
-            catch (Exception ex)
-            {
-                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
-            }
-        }
-        public ResponseData FindByName(string name)
-        {
-            try
-            {
-                var existingDepartment = unitOfWork.Departments.GetCodeDepartment(name);
-                if (existingDepartment == null)
-                {
-                    return new ResponseData(Message.ERROR, "Department not found");
-                }
-                return new ResponseData(Message.SUCCESS, existingDepartment);
+                return new ResponseData(Message.SUCCESS, existingMajor);
             }
             catch (Exception ex)
             {
@@ -64,11 +48,6 @@ namespace asd123.UseCase.Major.Crud
         {
             try
             {
-                var existingDepartment = unitOfWork.Majors.GetCodeMajor(major.Code);
-                if (existingDepartment != null)
-                {
-                    return new ResponseData(Message.SUCCESS, "Major existed");
-                }
                 var result = unitOfWork.Majors.Create(major);
                 return new ResponseData(Message.SUCCESS, result);
             }
@@ -78,26 +57,14 @@ namespace asd123.UseCase.Major.Crud
             }
         }
 
-        public ResponseData Update(asd123.Model.Major major, string code)
+        
+        public ResponseData Update(Model.Major major)
         {
             try
             {
-                var existingMajor = unitOfWork.Majors.GetCodeMajor(code);
-                if (existingMajor == null)
-                {
-                    return new ResponseData(Message.ERROR, "Major not found");
-                }
-
-                existingMajor.Code = major.Code;
-                existingMajor.Name = major.Name;
-                existingMajor.UpdatedAt = major.UpdatedAt;
+                unitOfWork.Majors.Update(major);
                 unitOfWork.SaveChanges();
-
-                return new ResponseData(Message.SUCCESS, existingMajor);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
+                return new ResponseData(Message.SUCCESS, major);
             }
             catch (Exception ex)
             {

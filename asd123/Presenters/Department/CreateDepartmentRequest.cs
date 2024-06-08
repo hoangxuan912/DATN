@@ -2,7 +2,7 @@
 
 namespace asd123.Presenters.Department
 {
-    public class CreateDepartmentPresenter
+    public class CreateDepartmentRequest
     {
         [Required]
         public string Code { get; set; }

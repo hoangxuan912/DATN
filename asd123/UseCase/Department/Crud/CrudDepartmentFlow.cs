@@ -74,7 +74,6 @@ namespace asd123.UseCase.Department.Crud
                     return new ResponseData(Message.ERROR, "Department with the same code already exists.");
                 }
         
-                // Kiểm tra sự tồn tại của phòng ban cần cập nhật trước khi thực hiện các thao tác
                 var existingDepartment = unitOfWork.Departments.FindOne(department.Id);
                 if (existingDepartment == null)
                 {

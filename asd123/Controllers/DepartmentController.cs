@@ -36,7 +36,7 @@ namespace asd123.Controllers
         }
         [HttpGet]
         [Route("get_department_by_id")]
-        public IActionResult GetDepartmentByName(int id)
+        public IActionResult GetDepartmentById(int id)
         {
             var result = workflow.FindById(id);
             if (result.Status == Message.SUCCESS)
@@ -48,7 +48,7 @@ namespace asd123.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateDepartment(CreateDepartmentPresenter model)
+        public IActionResult CreateDepartment(CreateDepartmentRequest model)
         {
             var existingDepartment = uow.Departments.GetCodeDepartment(model.Code);
             if (existingDepartment != null)
@@ -67,7 +67,7 @@ namespace asd123.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateDepartment(CreateDepartmentPresenter model, int id)
+        public IActionResult UpdateDepartment(CreateDepartmentRequest model, int id)
         {
             var existingDepartmentResult = workflow.FindById(id);
             if (existingDepartmentResult.Status != Message.SUCCESS)
@@ -75,10 +75,9 @@ namespace asd123.Controllers
                 return NotFound("Department not found.");
             }
     
-            var existingDepartment = existingDepartmentResult.Result;
 
             var map = _map.Map<Department>(model);
-            map.Id = id; // Đặt ID của phòng ban mới
+            map.Id = id; 
             map.UpdatedAt = DateTime.Now;
 
             var result = workflow.Update(map);

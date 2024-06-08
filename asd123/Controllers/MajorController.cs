@@ -15,20 +15,31 @@ namespace asd123.Controllers
     [ApiController]
     public class MajorController : ControllerBase
     {
-        CrudMajorFlow workflow;
-        private readonly IUnitOfWork uow;
+        CrudMajorFlow _workflow;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _map;
         public MajorController(IUnitOfWork _uow, IMapper map)
         {
-            uow = _uow;
+            _uow = _uow;
             _map = map;
-            workflow = new CrudMajorFlow(uow);
+            _workflow = new CrudMajorFlow(_uow);
         }
         [HttpGet]
         [Route("GetAll")]
         public IActionResult GetAllMajor()
         {
-            var result = workflow.List();
+            var result = _workflow.List();
+            if (result.Status == Message.SUCCESS)
+            {
+                return Ok(result.Result);
+            }
+            return BadRequest(result);
+        }
+        [HttpGet]
+        [Route("get_major_by_id")]
+        public IActionResult GetMajorById(int id)
+        {
+            var result = _workflow.FindById(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result.Result);
@@ -37,42 +48,62 @@ namespace asd123.Controllers
             return BadRequest(result);
         }
         [HttpPost]
-        public IActionResult CreateMajor(CreateMajorPresenter model)
+        public IActionResult CreateMajor(CreateMajorRequest model)
         {
-            var majorResponse = workflow.FindCodeByName(model.Code);
-            if (majorResponse.Status == Message.ERROR)
+            //bug
+            var majorResponse = _uow.Majors.GetCodeMajor(model.Code);
+            if (majorResponse == null)
             {
-                return BadRequest("existing code name");
-            }
-            var departmentResponse = workflow.FindByName(model.DepartmentName);
-            if (departmentResponse.Status == Message.ERROR)
-            {
-                return BadRequest(departmentResponse);
-            }
+                var departmentResponse = _uow.Departments.FindOne(model.DepartmentId);
+                if (departmentResponse == null)
+                {
+                    return BadRequest("Department not found.");
+                }
+                var major = _map.Map<Major>(model);
+                major.Name = model.Name;
+                major.DepartmentId = departmentResponse.Id;
+                major.CreatedAt = DateTime.Now;
 
-            var department = departmentResponse.Result as Department;
-            if (department == null)
-            {
-                return BadRequest("Invalid department data.");
-            }
-            var map = _map.Map<Major>(model);
-            map.DepartmentId = department.Id;
-            map.CreatedAt = DateTime.Now;
-            var result = workflow.Create(map);
-            if (result.Status == Message.SUCCESS)
-            {
-                return Ok(result.Result);
-            }
+                // Tạo Major mới
+                var createResult = _workflow.Create(major);
+                if (createResult.Status == Message.SUCCESS)
+                {
+                    return Ok(createResult.Result);
+                }
 
-            return BadRequest(result);
+                return BadRequest("An error occurred while creating the major.");
+            }
+            return BadRequest("Major with the same code already exists.");
+            
         }
 
-        [HttpPut]
-        public IActionResult UpdateMajor(UpdateMajorPresenter model, string code)
+        
+        [HttpPut("{id}")]
+        public IActionResult UpdateMajor(UpdateMajorRequest model, int id)
         {
-            var map = _map.Map<Major>(model);
-            map.UpdatedAt = DateTime.Now;
-            var result = workflow.Update(map, code);
+            var existingMajorResult = _workflow.FindById(id);
+            if (existingMajorResult.Status != Message.SUCCESS)
+            {
+                return NotFound("Major not found.");
+            }
+
+            var departmentResponse = _uow.Departments.FindOne(model.DepartmentId);
+            if (departmentResponse == null)
+                return BadRequest("Department not found.");
+
+            var existingMajor = existingMajorResult.Result as Major;
+            if (existingMajor == null)
+            {
+                return NotFound("Major not found.");
+            }
+
+            // Update the existing major with new values
+            existingMajor.Code = model.Code;
+            existingMajor.Name = model.Name;
+            existingMajor.UpdatedAt = DateTime.Now;
+            existingMajor.DepartmentId = model.DepartmentId;
+
+            var result = _workflow.Update(existingMajor);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);
@@ -84,7 +115,7 @@ namespace asd123.Controllers
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            var result = workflow.Delete(id);
+            var result = _workflow.Delete(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);

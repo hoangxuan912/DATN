@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace asd123.Presenters.Major
 {
-    public class CreateMajorPresenter
+    public class CreateMajorRequest
     {
         [Required]
         public string Code { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
-        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
     }
 }

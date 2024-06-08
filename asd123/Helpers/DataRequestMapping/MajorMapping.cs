@@ -9,7 +9,7 @@ namespace asd123.Helpers.DataRequestMapping
     {
         public MajorMapping()
         {
-            CreateMap<CreateMajorPresenter, Major>();
+            CreateMap<CreateMajorRequest, Major>().ReverseMap();
 
         }
     }

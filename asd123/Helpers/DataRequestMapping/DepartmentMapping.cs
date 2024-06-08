@@ -8,7 +8,7 @@ namespace asd123.Helpers.DataRequestMapping
     {
         public DepartmentMapping()
         {
-            CreateMap<CreateDepartmentPresenter, Department>();
+            CreateMap<CreateDepartmentRequest, Department>();
 
         }
 

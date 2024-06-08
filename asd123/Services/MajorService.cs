@@ -19,5 +19,6 @@ namespace asd123.Services
             var result = ApplicationDbContext.Majors.FirstOrDefault(d => d.Code == code);
             return result;
         }
+
     }
 }
