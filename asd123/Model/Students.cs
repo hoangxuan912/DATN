@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using Microsoft.EntityFrameworkCore;
+
 namespace asd123.Model
 {
     public class Students : BaseSchema

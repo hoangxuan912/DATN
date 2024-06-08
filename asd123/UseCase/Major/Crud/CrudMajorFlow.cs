@@ -27,7 +27,7 @@ namespace asd123.UseCase.Major.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-
+        
         public ResponseData FindByName(string name)
         {
             try
@@ -49,6 +49,11 @@ namespace asd123.UseCase.Major.Crud
         {
             try
             {
+                var existingDepartment = unitOfWork.Majors.GetCodeMajor(major.Code);
+                if (existingDepartment != null)
+                {
+                    return new ResponseData(Message.SUCCESS, "Major existed");
+                }
                 var result = unitOfWork.Majors.Create(major);
                 return new ResponseData(Message.SUCCESS, result);
             }

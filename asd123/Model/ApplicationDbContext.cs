@@ -23,6 +23,26 @@ namespace asd123.Model
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Subject> Subjects { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Class>(entity =>
+            {
+                entity.HasIndex(e => e.Code);
+            });modelBuilder.Entity<Department>(entity =>
+            {
+                entity.HasIndex(e => e.Code);
+            });modelBuilder.Entity<Major>(entity =>
+            {
+                entity.HasIndex(e => e.Code);
+            });modelBuilder.Entity<Students>(entity =>
+            {
+                entity.HasIndex(e => e.Code);
+            });modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasIndex(e => e.Code);
+            });
+        }
     }
 }

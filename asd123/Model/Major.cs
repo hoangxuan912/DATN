@@ -9,7 +9,6 @@ namespace asd123.Model
 {
     public class Major : BaseSchema
     {
-        [Unicode]
         public string Code { get; set; }
         public string Name { get; set; }
         public List<Class> Classes { get; set; }

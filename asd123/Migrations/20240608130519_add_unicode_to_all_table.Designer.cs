@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using asd123.Model;
 
@@ -11,9 +12,11 @@ using asd123.Model;
 namespace asd123.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240608130519_add_unicode_to_all_table")]
+    partial class add_unicode_to_all_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,7 +231,8 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -244,8 +248,6 @@ namespace asd123.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code");
 
                     b.HasIndex("MajorId");
 
@@ -266,7 +268,8 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -284,8 +287,6 @@ namespace asd123.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code");
-
                     b.ToTable("Departments");
                 });
 
@@ -299,7 +300,8 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -315,8 +317,6 @@ namespace asd123.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code");
 
                     b.HasIndex("DepartmentId");
 
@@ -374,7 +374,8 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("longtext");
 
                     b.Property<int>("ContactNumber")
                         .HasColumnType("int");
@@ -404,8 +405,6 @@ namespace asd123.Migrations
 
                     b.HasIndex("ClassID");
 
-                    b.HasIndex("Code");
-
                     b.ToTable("Students");
                 });
 
@@ -419,7 +418,8 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -438,8 +438,6 @@ namespace asd123.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code");
 
                     b.HasIndex("MajorId");
 

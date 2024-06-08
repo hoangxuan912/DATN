@@ -74,8 +74,7 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
-    //TODO: asdasdasd
-    //hxaun
+    
     public ResponseData Delete(string code)
     {
         try
