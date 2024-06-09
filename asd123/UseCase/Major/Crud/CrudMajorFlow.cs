@@ -27,6 +27,22 @@ namespace asd123.UseCase.Major.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
+        public ResponseData FindByCode(string code)
+        {
+            try
+            {
+                var existingMajor = unitOfWork.Majors.GetCodeMajor(code);
+                if (existingMajor == null)
+                {
+                    return new ResponseData(Message.ERROR, "Major not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingMajor);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
         public ResponseData FindById(int id)
         {
             try

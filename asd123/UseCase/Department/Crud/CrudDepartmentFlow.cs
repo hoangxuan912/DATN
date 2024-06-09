@@ -13,12 +13,10 @@ namespace asd123.UseCase.Department.Crud
     public class CrudDepartmentFlow
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IMapper mapper;
 
-        public CrudDepartmentFlow(IUnitOfWork unitOfWork, IMapper mapper)
+        public CrudDepartmentFlow(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;
-            this.mapper = mapper;
         }
 
         public ResponseData List()
@@ -63,6 +61,7 @@ namespace asd123.UseCase.Department.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
+        
 
         public ResponseData Update(asd123.Model.Department department)
         {

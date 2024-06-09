@@ -20,7 +20,7 @@ namespace asd123.Controllers
         {
             uow = _uow;
             _map = map;
-            workflow = new CrudDepartmentFlow(uow,_map);
+            workflow = new CrudDepartmentFlow(uow);
         }
         [HttpGet]
         [Route("get_all_department")]

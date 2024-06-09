@@ -16,6 +16,7 @@ namespace asd123.Controllers
     public class MajorController : ControllerBase
     {
         CrudMajorFlow _workflow;
+        private CrudDepartmentFlow _departmentFlow;
         private readonly IUnitOfWork _uow;
         private readonly IMapper _map;
         public MajorController(IUnitOfWork _uow, IMapper map)
@@ -23,6 +24,7 @@ namespace asd123.Controllers
             _uow = _uow;
             _map = map;
             _workflow = new CrudMajorFlow(_uow);
+            _departmentFlow = new CrudDepartmentFlow(_uow);
         }
         [HttpGet]
         [Route("GetAll")]
@@ -50,20 +52,21 @@ namespace asd123.Controllers
         [HttpPost]
         public IActionResult CreateMajor(CreateMajorRequest model)
         {
-            var majorResponse = _uow.Majors.GetCodeMajor(model.Code);
-            if (majorResponse.Code != "DefaultCode")
+            var majorResponse = _workflow.FindByCode(model.Code);
+            if (majorResponse.Status == Message.SUCCESS)
             {
                 return BadRequest("Major with the same code already exists.");
             }
             
-            var departmentResponse = _uow.Departments.FindOne(model.DepartmentId);
-            if (departmentResponse == null)
+            var departmentResponse = _departmentFlow.FindById(model.DepartmentId);
+            if (departmentResponse.Status == Message.ERROR)
             {
                 return BadRequest("Department not found.");
             }
             var major = _map.Map<Major>(model);
+            major.Code = model.Code;
             major.Name = model.Name;
-            major.DepartmentId = departmentResponse.Id;
+            major.DepartmentId = model.DepartmentId;
             major.CreatedAt = DateTime.Now;
 
             // Tạo Major mới
