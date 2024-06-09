@@ -17,7 +17,7 @@ namespace asd123.Services
         public Major GetCodeMajor(string code)
         {
             var result = ApplicationDbContext.Majors.FirstOrDefault(d => d.Code == code);
-            return result;
+            return result ?? new Major { Code = "DefaultCode", Name = "DefaultName" };
         }
 
     }

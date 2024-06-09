@@ -50,30 +50,30 @@ namespace asd123.Controllers
         [HttpPost]
         public IActionResult CreateMajor(CreateMajorRequest model)
         {
-            //bug
             var majorResponse = _uow.Majors.GetCodeMajor(model.Code);
-            if (majorResponse == null)
+            if (majorResponse.Code != "DefaultCode")
             {
-                var departmentResponse = _uow.Departments.FindOne(model.DepartmentId);
-                if (departmentResponse == null)
-                {
-                    return BadRequest("Department not found.");
-                }
-                var major = _map.Map<Major>(model);
-                major.Name = model.Name;
-                major.DepartmentId = departmentResponse.Id;
-                major.CreatedAt = DateTime.Now;
-
-                // Tạo Major mới
-                var createResult = _workflow.Create(major);
-                if (createResult.Status == Message.SUCCESS)
-                {
-                    return Ok(createResult.Result);
-                }
-
-                return BadRequest("An error occurred while creating the major.");
+                return BadRequest("Major with the same code already exists.");
             }
-            return BadRequest("Major with the same code already exists.");
+            
+            var departmentResponse = _uow.Departments.FindOne(model.DepartmentId);
+            if (departmentResponse == null)
+            {
+                return BadRequest("Department not found.");
+            }
+            var major = _map.Map<Major>(model);
+            major.Name = model.Name;
+            major.DepartmentId = departmentResponse.Id;
+            major.CreatedAt = DateTime.Now;
+
+            // Tạo Major mới
+            var createResult = _workflow.Create(major);
+            if (createResult.Status == Message.SUCCESS)
+            {
+                return Ok(createResult.Result);
+            }
+
+            return BadRequest("An error occurred while creating the major.");
             
         }
 
