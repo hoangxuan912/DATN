@@ -78,17 +78,11 @@ namespace asd123.UseCase.Class.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-        public ResponseData Delete(string code)
+        public ResponseData Delete(int id)
         {
             try
             {
-                var existing_class = _uow.Class.GetCodeClass(code);
-                if (existing_class == null)
-                {
-                    return new ResponseData(Message.ERROR, "Class not found");
-                }
-
-                var result = _uow.Class.Delete(existing_class.Id);
+                var result = _uow.Class.Delete(id);
                 return new ResponseData(Message.SUCCESS, result);
             }
             catch (Exception ex)
