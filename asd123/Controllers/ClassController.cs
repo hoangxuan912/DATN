@@ -62,7 +62,7 @@ namespace asd123.Controllers
                 return BadRequest("Class with the same code already exists.");
             }
             
-            var departmentResponse = _MajorWorkflow.FindById(model.MajorId);
+            var departmentResponse = _workflow.FindMajorById(model.MajorId);
             if (departmentResponse.Status == Message.ERROR)
             {
                 return BadRequest("Major not found.");
@@ -85,7 +85,7 @@ namespace asd123.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateMajor(UpdateClassPresenter model, int id)
+        public IActionResult UpdateClass(UpdateClassPresenter model, int id)
         {
             var existingClassResult = _workflow.FindById(id);
             if (existingClassResult.Status != Message.SUCCESS)

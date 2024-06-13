@@ -40,6 +40,22 @@ namespace asd123.UseCase.Class.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
+        public ResponseData FindMajorById(int id)
+        {
+            try
+            {
+                var existingMajor = _uow.Majors.FindOne(id);
+                if (existingMajor == null)
+                {
+                    return new ResponseData(Message.ERROR, "Major not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingMajor);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
         public ResponseData FindById(int id)
         {
             try
