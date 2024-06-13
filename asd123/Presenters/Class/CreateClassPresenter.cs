@@ -10,6 +10,6 @@ namespace asd123.Presenters.Class
         [Required]
         public string Name { get; set; }
         [Required]
-        public string MajorName { get; set; }
+        public int MajorId { get; set; }
     }
 }

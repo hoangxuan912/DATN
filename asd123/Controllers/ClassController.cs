@@ -4,6 +4,7 @@ using asd123.Presenters.Subject;
 using asd123.Services;
 using asd123.Ultil;
 using asd123.UseCase.Class.Crud;
+using asd123.UseCase.Major.Crud;
 using asd123.UseCase.Subject.Crud;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -15,21 +16,22 @@ namespace asd123.Controllers
     [ApiController]
     public class ClassController : ControllerBase
     {
-        CrudClassFlow workflow;
-        private readonly IUnitOfWork uow;
+        CrudClassFlow _workflow;
+        CrudMajorFlow _MajorWorkflow;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _map;
-        public ClassController(IUnitOfWork _uow, IMapper map)
+        public ClassController(IUnitOfWork uow, IMapper map)
         {
-            uow = _uow;
+            _uow = uow;
             _map = map;
-            workflow = new CrudClassFlow(uow);
+            _workflow = new CrudClassFlow(uow);
         }
 
         [HttpGet]
         [Route("GetAll")]
         public IActionResult GetAllClass()
         {
-            var result = workflow.List();
+            var result = _workflow.List();
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result.Result);
@@ -38,38 +40,87 @@ namespace asd123.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet]
+        [Route("get_class_by_id")]
+        public IActionResult GetClassById(int id)
+        {
+            var result = _workflow.FindById(id);
+            if (result.Status == Message.SUCCESS)
+            {
+                return Ok(result.Result);
+            }
+
+            return BadRequest(result);
+        }
+        
         [HttpPost]
         public IActionResult CreateClass(CreateClassPresenter model)
         {
-            var major_response = workflow.FindByName(model.MajorName);
-            if (major_response.Status == Message.ERROR)
+            var majorResponse = _workflow.FindByCode(model.Code);
+            if (majorResponse.Status == Message.SUCCESS)
             {
-                return BadRequest(major_response);
+                return BadRequest("Class with the same code already exists.");
+            }
+            
+            var departmentResponse = _MajorWorkflow.FindById(model.MajorId);
+            if (departmentResponse.Status == Message.ERROR)
+            {
+                return BadRequest("Major not found.");
+            }
+            var cls = _map.Map<Class>(model);
+            cls.Code = model.Code;
+            cls.Name = model.Name;
+            cls.MajorId = model.MajorId;
+            cls.CreatedAt = DateTime.Now;
+
+            // Tạo Major mới
+            var createResult = _workflow.Create(cls);
+            if (createResult.Status == Message.SUCCESS)
+            {
+                return Ok(createResult.Result);
             }
 
-            var major = major_response.Result as Major;
-            if (major == null)
+            return BadRequest("An error occurred while creating the major.");
+            
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateMajor(UpdateClassPresenter model, int id)
+        {
+            var existingClassResult = _workflow.FindById(id);
+            if (existingClassResult.Status != Message.SUCCESS)
             {
-                return BadRequest("Invalid Major data.");
+                return NotFound("Class not found.");
             }
-            var map = _map.Map<Class>(model);
-            map.MajorId = major.Id;
-            map.CreatedAt = DateTime.Now;
-            var result = workflow.Create(map);
+
+            var majorResponse = _uow.Majors.FindOne(model.MajorId);
+            if (majorResponse == null)
+                return BadRequest("Major not found.");
+
+            var existingClass = existingClassResult.Result as Class;
+            if (existingClass == null)
+            {
+                return NotFound("Class not found.");
+            }
+
+            // Update the existing major with new values
+            existingClass.Code = model.Code;
+            existingClass.Name = model.Name;
+            existingClass.UpdatedAt = DateTime.Now;
+            existingClass.MajorId = model.MajorId;
+
+            var result = _workflow.Update(existingClass);
             if (result.Status == Message.SUCCESS)
             {
-                return Ok(result.Result);
+                return Ok(result);
             }
 
             return BadRequest(result);
         }
-
-        [HttpPut]
-        public IActionResult UpdateClass(UpdateSubjectPresenter model, string code)
+        [HttpDelete]
+        public IActionResult Delete(int id)
         {
-            var map = _map.Map<Class>(model);
-            map.UpdatedAt = DateTime.Now;
-            var result = workflow.Update(map, code);
+            var result = _workflow.Delete(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);
