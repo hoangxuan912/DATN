@@ -16,8 +16,24 @@ namespace asd123.UseCase.Class.Crud
         {
             try
             {
-                var subjects = _uow.Class.FindAll();
-                return new ResponseData(Message.SUCCESS, subjects);
+                var existingClass = _uow.Class.FindAll();
+                return new ResponseData(Message.SUCCESS, existingClass);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
+        public ResponseData FindByCode(string code)
+        {
+            try
+            {
+                var existingClass = _uow.Class.GetCodeClass(code);
+                if (existingClass == null)
+                {
+                    return new ResponseData(Message.ERROR, "Class not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingClass);
             }
             catch (Exception ex)
             {
@@ -28,28 +44,12 @@ namespace asd123.UseCase.Class.Crud
         {
             try
             {
-                var existing_major = _uow.Majors.FindOne(id);
-                if (existing_major == null)
+                var existingClass = _uow.Class.FindOne(id);
+                if (existingClass == null)
                 {
-                    return new ResponseData(Message.ERROR, "Major not found");
+                    return new ResponseData(Message.ERROR, "Class not found");
                 }
-                return new ResponseData(Message.SUCCESS, existing_major);
-            }
-            catch (Exception ex)
-            {
-                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
-            }
-        }
-        public ResponseData FindByName(string name)
-        {
-            try
-            {
-                var existing_major = _uow.Majors.GetCodeMajor(name);
-                if (existing_major == null)
-                {
-                    return new ResponseData(Message.ERROR, "Major not found");
-                }
-                return new ResponseData(Message.SUCCESS, existing_major);
+                return new ResponseData(Message.SUCCESS, existingClass);
             }
             catch (Exception ex)
             {
@@ -68,26 +68,13 @@ namespace asd123.UseCase.Class.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-        public ResponseData Update(asd123.Model.Class cls, string code)
+        public ResponseData Update(Model.Class cls)
         {
             try
             {
-                var existing_class = _uow.Class.GetCodeClass(code);
-                if (existing_class == null)
-                {
-                    return new ResponseData(Message.ERROR, "Class not found");
-                }
-
-                existing_class.Code = cls.Code;
-                existing_class.Name = cls.Name;
-                existing_class.UpdatedAt = cls.UpdatedAt;
+                _uow.Class.Update(cls);
                 _uow.SaveChanges();
-
-                return new ResponseData(Message.SUCCESS, existing_class);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
+                return new ResponseData(Message.SUCCESS, cls);
             }
             catch (Exception ex)
             {
