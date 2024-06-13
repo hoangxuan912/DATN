@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace asd123.Services
 {
@@ -18,6 +19,7 @@ namespace asd123.Services
         IDbContextTransaction BeginTransaction();
         void Commit();
         ApplicationDbContext GetDbContext();
+        public IEnumerable<ValidationResult> GetValidationErrors();
     }
 
     public class UnitOfWork : IUnitOfWork
@@ -90,6 +92,15 @@ namespace asd123.Services
             }
         }
 
+        public IEnumerable<ValidationResult> GetValidationErrors()
+        {
+            var validationResults = new List<ValidationResult>();
+            var context = new ValidationContext(Students); // Assuming _uow is your DbContext
+            Validator.TryValidateObject(Students, context, validationResults, validateAllProperties: true);
+            return validationResults;
+        }
+
+        
         public ApplicationDbContext GetDbContext()
         {
             return dbContext;

@@ -1,4 +1,5 @@
 using asd123.Helpers;
+using asd123.Model;
 using asd123.Services;
 using asd123.Ultil;
 using Microsoft.EntityFrameworkCore;
@@ -25,11 +26,33 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
-    public ResponseData FindByName(string name)
+    public ResponseData FindByCode(string code)
     {
         try
         {
-            var existingClass = _uow.Class.GetCodeClass(name);
+            var existingStudent = _uow.Students.getCodeStudents(code);
+            if (existingStudent == null)
+            {
+                return new ResponseData(Message.ERROR, "Student not found");
+            }
+            
+            return new ResponseData(Message.SUCCESS, existingStudent);
+        }
+        catch (Exception ex)
+        {
+            return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+        }
+    }
+    
+    public ResponseData FindClassById(int id)
+    {
+        try
+        {
+            var existingClass = _uow.Class.FindOne(id);
+            if (existingClass == null)
+            {
+                return new ResponseData(Message.ERROR, "Class not found");
+            }
             return new ResponseData(Message.SUCCESS, existingClass);
         }
         catch (Exception ex)
@@ -37,6 +60,24 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+    
+    public ResponseData FindById(int id)
+    {
+        try
+        {
+            var existingStudent = _uow.Students.FindOne(id);
+            if (existingStudent == null)
+            {
+                return new ResponseData(Message.ERROR, "Student not found");
+            }
+            return new ResponseData(Message.SUCCESS, existingStudent);
+        }
+        catch (Exception ex)
+        {
+            return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+        }
+    }
+    
     public ResponseData Create(Model.Students sts)
     {
         try
@@ -49,39 +90,26 @@ public class CrudStudentFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
-    public ResponseData Update(Model.Students stu, string code)
+    public ResponseData Update(Model.Students stu)
     {
-        var existingStudent = _uow.Students.getCodeStudents(code);
         try
         {
-            existingStudent.Code = stu.Code;
-            existingStudent.Name = stu.Name;
-            existingStudent.Sex = stu.Sex;
-            existingStudent.Dob = stu.Dob;
-            existingStudent.HomeTown = stu.HomeTown;
-            existingStudent.ContactNumber = stu.ContactNumber;
-            existingStudent.UpdatedAt = stu.UpdatedAt;
+            _uow.Students.Update(stu);
             _uow.SaveChanges();
-
-            return new ResponseData(Message.SUCCESS, existingStudent);
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
+            return new ResponseData(Message.SUCCESS, stu);
         }
         catch (Exception ex)
         {
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+
     
-    public ResponseData Delete(string code)
+    public ResponseData Delete(int id)
     {
         try
         {
-            var existingStudent = _uow.Students.getCodeStudents(code);
-
-            var result = _uow.Students.Delete(existingStudent.Id);
+            var result = _uow.Students.Delete(id);
             return new ResponseData(Message.SUCCESS, result);
         }
         catch (Exception ex)

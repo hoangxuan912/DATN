@@ -33,24 +33,12 @@ public class StudentController : Controller
 
         return BadRequest(result);
     }
-    [HttpPost]
-    public IActionResult CreateStudent(create_student_presenter model)
+    
+    [HttpGet]
+    [Route("get_student_by_id")]
+    public IActionResult GetStudentById(int id)
     {
-        var class_response = workflow.FindByName(model.ClassName);
-        if (class_response.Status == Message.ERROR)
-        {
-            return BadRequest(class_response);
-        }
-
-        var _class = class_response.Result as Class;
-        if (_class == null)
-        {
-            return BadRequest("Invalid Class data.");
-        }
-        var map = _map.Map<Students>(model);
-        map.ClassID = _class.Id;
-        map.CreatedAt = DateTime.Now;
-        var result = workflow.Create(map);
+        var result = workflow.FindById(id);
         if (result.Status == Message.SUCCESS)
         {
             return Ok(result.Result);
@@ -58,12 +46,66 @@ public class StudentController : Controller
 
         return BadRequest(result);
     }
-    [HttpPut]
-    public IActionResult UpdateStudent(update_student_presenter model, string code)
+    
+    [HttpPost]
+    public IActionResult CreateStudent(create_student_presenter model)
     {
-        var map = _map.Map<Students>(model);
-        map.UpdatedAt = DateTime.Now;
-        var result = workflow.Update(map, code);
+        var class_response = workflow.FindByCode(model.Code);
+        if (class_response.Status == Message.SUCCESS)
+        {
+            return BadRequest("Student with the same code already exists.");
+        }
+
+        var _class = workflow.FindClassById(model.ClassId);
+        if (_class.Status == Message.ERROR)
+        {
+            return BadRequest("Class not found.");
+        }
+        var stt = _map.Map<Students>(model);
+        stt.Code = model.Code;
+        stt.Name = model.Name;
+        stt.Sex = model.Sex;
+        stt.Dob = model.Dob;
+        stt.HomeTown = model.HomeTown;
+        stt.ContactNumber = model.ContactNumber;
+        stt.ClassID = model.ClassId;
+        stt.CreatedAt = DateTime.Now;
+        var result = workflow.Create(stt);
+        if (result.Status == Message.SUCCESS)
+        {
+            return Ok(result.Result);
+        }
+
+        return BadRequest("An error occurred while creating the student.");
+    }
+    [HttpPut("{id}")]
+    public IActionResult UpdateStudent(update_student_presenter model, int id)
+    {
+        var existingStudentResult = workflow.FindById(id);
+        if (existingStudentResult.Status != Message.SUCCESS)
+        {
+            return NotFound("Student not found.");
+        }
+        
+        var classResponse = workflow.FindClassById(model.ClassId);
+        if (classResponse.Status == Message.ERROR)
+            return BadRequest("class not found.");
+        
+        var existingStudent = existingStudentResult.Result as Students;
+        if (existingStudent == null)
+        {
+            return NotFound("Student not found.");
+        }
+        //var map = _map.Map<Students>(model);
+        existingStudent.Code = model.Code;
+        existingStudent.Name = model.Name;
+        existingStudent.Sex = model.Sex;
+        existingStudent.Dob = model.Dob;
+        existingStudent.HomeTown = model.HomeTown;
+        existingStudent.ContactNumber = model.ContactNumber;
+        existingStudent.ClassID = model.ClassId;
+        existingStudent.UpdatedAt = DateTime.Now;
+        var result = workflow.Update(existingStudent);
         if (result.Status == Message.SUCCESS)
         {
             return Ok(result);
@@ -72,9 +114,9 @@ public class StudentController : Controller
         return BadRequest(result);
     }
     [HttpDelete]
-    public IActionResult Delete(string code)
+    public IActionResult Delete(int id)
     {
-        var result = workflow.Delete(code);
+        var result = workflow.Delete(id);
         if (result.Status == Message.SUCCESS)
         {
             return Ok(result);

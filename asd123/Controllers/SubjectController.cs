@@ -53,14 +53,14 @@ namespace asd123.Controllers
         [HttpPost]
         public IActionResult CreateSubject(CreateSubjectPresenter model)
         {
-            var majorResponse = workflow.FindByCode(model.Code);
-            if (majorResponse.Status == Message.SUCCESS)
+            var subjectResponse = workflow.FindByCode(model.Code);
+            if (subjectResponse.Status == Message.SUCCESS)
             {
                 return BadRequest("Subject with the same code already exists.");
             }
             
-            var departmentResponse = workflow.FindMajorById(model.MajorId);
-            if (departmentResponse.Status == Message.ERROR)
+            var majorResponse = workflow.FindMajorById(model.MajorId);
+            if (majorResponse.Status == Message.ERROR)
             {
                 return BadRequest("Major not found.");
             }

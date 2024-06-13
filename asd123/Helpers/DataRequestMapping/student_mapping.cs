@@ -9,5 +9,6 @@ public class student_mapping : Profile
     public student_mapping()
     {
         CreateMap<create_student_presenter, Students>();
+        CreateMap<update_student_presenter, Students>();
     }
 }
