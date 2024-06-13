@@ -11,6 +11,6 @@ namespace asd123.Presenters.Subject
         [Required]
         public int TotalCreadits { get; set; }
         [Required]
-        public string MajorName { get; set; }
+        public int MajorId { get; set; }
     }
 }
