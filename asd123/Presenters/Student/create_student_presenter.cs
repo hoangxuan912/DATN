@@ -17,5 +17,5 @@ public class create_student_presenter
     [Required]
     public int ContactNumber { get; set; }
     [Required]
-    public string ClassName { get; set; }
+    public int ClassId { get; set; }
 }

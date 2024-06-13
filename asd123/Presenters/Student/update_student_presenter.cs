@@ -16,4 +16,6 @@ public class update_student_presenter
     public string HomeTown {  get; set; }
     [Required]
     public int ContactNumber { get; set; }
+    [Required]
+    public int ClassId { get; set; }
 }
