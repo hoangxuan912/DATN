@@ -28,16 +28,32 @@ namespace asd123.UseCase.Subject.Crud
             }
         }
 
-        public ResponseData FindByName(string name)
+        public ResponseData FindByCode(string code)
         {
             try
             {
-                var existingMajor = unitOfWork.Majors.GetCodeMajor(name);
-                if (existingMajor == null)
+                var existingSubject = unitOfWork.Subjects.GetCodeSubject(code);
+                if (existingSubject == null)
                 {
-                    return new ResponseData(Message.ERROR, "Major not found");
+                    return new ResponseData(Message.ERROR, "Subject not found");
                 }
-                return new ResponseData(Message.SUCCESS, existingMajor);
+                return new ResponseData(Message.SUCCESS, existingSubject);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
+        public ResponseData FindById(int id)
+        {
+            try
+            {
+                var existingSubject = unitOfWork.Subjects.FindOne(id);
+                if (existingSubject == null)
+                {
+                    return new ResponseData(Message.ERROR, "Subject not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingSubject);
             }
             catch (Exception ex)
             {
@@ -58,27 +74,13 @@ namespace asd123.UseCase.Subject.Crud
             }
         }
 
-        public ResponseData Update(asd123.Model.Subject subject, string code)
+        public ResponseData Update(Model.Subject subject)
         {
             try
             {
-                var existingSubject = unitOfWork.Subjects.GetCodeSubject(code);
-                if (existingSubject == null)
-                {
-                    return new ResponseData(Message.ERROR, "Subject not found");
-                }
-
-                existingSubject.Code = subject.Code;
-                existingSubject.Name = subject.Name;
-                existingSubject.TotalCreadits = subject.TotalCreadits;
-                existingSubject.UpdatedAt = subject.UpdatedAt;
+                unitOfWork.Subjects.Update(subject);
                 unitOfWork.SaveChanges();
-
-                return new ResponseData(Message.SUCCESS, existingSubject);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return new ResponseData(Message.ERROR, "The entity being updated has been modified by another user. Please reload the entity and try again.");
+                return new ResponseData(Message.SUCCESS, subject);
             }
             catch (Exception ex)
             {
@@ -86,17 +88,11 @@ namespace asd123.UseCase.Subject.Crud
             }
         }
 
-        public ResponseData Delete(string code)
+        public ResponseData Delete(int id)
         {
             try
             {
-                var existingSubject = unitOfWork.Subjects.GetCodeSubject(code);
-                if (existingSubject == null)
-                {
-                    return new ResponseData(Message.ERROR, "Subject not found");
-                }
-
-                var result = unitOfWork.Subjects.Delete(existingSubject.Id);
+                var result = unitOfWork.Subjects.Delete(id);
                 return new ResponseData(Message.SUCCESS, result);
             }
             catch (Exception ex)
