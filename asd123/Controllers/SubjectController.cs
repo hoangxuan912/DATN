@@ -36,24 +36,12 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
-        [HttpPost]
-        public IActionResult CreateSubject(CreateSubjectPresenter model)
+        
+        [HttpGet]
+        [Route("get_subject_by_id")]
+        public IActionResult GetSubjectById(int id)
         {
-            var major_response = workflow.FindByName(model.MajorName);
-            if (major_response.Status == Message.ERROR)
-            {
-                return BadRequest(major_response);
-            }
-
-            var major = major_response.Result as Major;
-            if (major == null)
-            {
-                return BadRequest("Invalid Major data.");
-            }
-            var map = _map.Map<Subject>(model);
-            map.MajorId = major.Id;
-            map.CreatedAt = DateTime.Now;
-            var result = workflow.Create(map);
+            var result = workflow.FindById(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result.Result);
@@ -61,13 +49,64 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
-
-        [HttpPut]
-        public IActionResult UpdateSubject(UpdateSubjectPresenter model, string code)
+        
+        [HttpPost]
+        public IActionResult CreateSubject(CreateSubjectPresenter model)
         {
-            var map = _map.Map<Subject>(model);
-            map.UpdatedAt = DateTime.Now;
-            var result = workflow.Update(map, code);
+            var majorResponse = workflow.FindByCode(model.Code);
+            if (majorResponse.Status == Message.SUCCESS)
+            {
+                return BadRequest("Subject with the same code already exists.");
+            }
+            
+            var departmentResponse = workflow.FindMajorById(model.MajorId);
+            if (departmentResponse.Status == Message.ERROR)
+            {
+                return BadRequest("Major not found.");
+            }
+            var sbt = _map.Map<Subject>(model);
+            sbt.Code = model.Code;
+            sbt.Name = model.Name;
+            sbt.MajorId = model.MajorId;
+            sbt.CreatedAt = DateTime.Now;
+
+            // Tạo Major mới
+            var createResult = workflow.Create(sbt);
+            if (createResult.Status == Message.SUCCESS)
+            {
+                return Ok(createResult.Result);
+            }
+
+            return BadRequest("An error occurred while creating the major.");
+            
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateClass(UpdateSubjectPresenter model, int id)
+        {
+            var existingSubjectResult = workflow.FindById(id);
+            if (existingSubjectResult.Status != Message.SUCCESS)
+            {
+                return NotFound("Subject not found.");
+            }
+
+            var majorResponse = uow.Majors.FindOne(model.MajorId);
+            if (majorResponse == null)
+                return BadRequest("Major not found.");
+
+            var existingSubject = existingSubjectResult.Result as Subject;
+            if (existingSubject == null)
+            {
+                return NotFound("Subject not found.");
+            }
+
+            // Update the existing major with new values
+            existingSubject.Code = model.Code;
+            existingSubject.Name = model.Name;
+            existingSubject.UpdatedAt = DateTime.Now;
+            existingSubject.MajorId = model.MajorId;
+
+            var result = workflow.Update(existingSubject);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);
@@ -77,9 +116,9 @@ namespace asd123.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(string code)
+        public IActionResult Delete(int id)
         {
-            var result = workflow.Delete(code);
+            var result = workflow.Delete(id);
             if (result.Status == Message.SUCCESS)
             {
                 return Ok(result);

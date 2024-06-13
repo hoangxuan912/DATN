@@ -44,23 +44,40 @@ namespace asd123.UseCase.Subject.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-        public ResponseData FindById(int id)
+        public ResponseData FindMajorById(int id)
         {
             try
             {
-                var existingSubject = unitOfWork.Subjects.FindOne(id);
-                if (existingSubject == null)
+                var existingMajor = unitOfWork.Majors.FindOne(id);
+                if (existingMajor == null)
                 {
-                    return new ResponseData(Message.ERROR, "Subject not found");
+                    return new ResponseData(Message.ERROR, "Major not found");
                 }
-                return new ResponseData(Message.SUCCESS, existingSubject);
+                return new ResponseData(Message.SUCCESS, existingMajor);
             }
             catch (Exception ex)
             {
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-
+        
+        public ResponseData FindById(int id)
+        {
+            try
+            {
+                var existingClass = unitOfWork.Subjects.FindOne(id);
+                if (existingClass == null)
+                {
+                    return new ResponseData(Message.ERROR, "Subject not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingClass);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
+        
         public ResponseData Create(asd123.Model.Subject subject)
         {
             try
