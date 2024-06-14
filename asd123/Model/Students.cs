@@ -16,6 +16,7 @@ namespace asd123.Model
         public DateOnly Dob { get; set; }
         public string HomeTown {  get; set; }
         public int ContactNumber { get; set; }
+        public ICollection<Marks> Marks { get; set; }
         public int ClassID { get; set; }
         public Class Class { get; set; }
     }

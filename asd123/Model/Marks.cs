@@ -15,7 +15,5 @@ namespace asd123.Model
         public int Midterm { get; set; }
         public int Final_Exam { get; set; }
         public int Attendance {get; set; }
-
-
     }
 }
