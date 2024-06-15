@@ -1,4 +1,6 @@
-﻿using asd123.Model;
+﻿using asd123.DTO;
+using asd123.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace asd123.Services
 {

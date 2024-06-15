@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace asd123.Services
 {
@@ -13,6 +14,7 @@ namespace asd123.Services
         ISubject Subjects { get; }
         IClass Class { get; }
         IStudent Students { get; }
+        IMark Marks { get; }
         int SaveChanges();
         Task SaveChangesAsync();
         IExecutionStrategy CreateExecutionStrategy();
@@ -31,6 +33,8 @@ namespace asd123.Services
         public ISubject Subjects { get; }
         public IClass Class { get; }
         public IStudent Students { get; }
+        public IMark Marks { get; }
+
         public UnitOfWork(ApplicationDbContext _dbContext)
         {
             dbContext = _dbContext;
@@ -39,6 +43,7 @@ namespace asd123.Services
             Subjects = new SubjectService(dbContext);
             Class = new ClassService(dbContext);
             Students = new StudentService(dbContext);
+            Marks = new MarkService(dbContext);
         }
 
         public IExecutionStrategy CreateExecutionStrategy()
@@ -100,7 +105,7 @@ namespace asd123.Services
             return validationResults;
         }
 
-        
+
         public ApplicationDbContext GetDbContext()
         {
             return dbContext;

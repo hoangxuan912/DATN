@@ -14,6 +14,6 @@ namespace asd123.Model
         public Subject Subject { get; set; }
         public int Midterm { get; set; }
         public int Final_Exam { get; set; }
-        public int Attendance {get; set; }
+        public int Attendance { get; set; }
     }
 }
