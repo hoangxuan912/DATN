@@ -117,30 +117,35 @@ public class MarkController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+
         var existingMarkResult = workflow.FindById(id);
         if (existingMarkResult.Status != Message.SUCCESS)
         {
             return NotFound("Mark not found.");
         }
 
-        var MarkResult = existingMarkResult.Result as Marks;
-        var newMark = new Marks
+        var existingMark = existingMarkResult.Result as Marks;
+
+        if (existingMark == null)
         {
-            StudentId = MarkResult.StudentId,
-            SubjectId = MarkResult.SubjectId,
-            Midterm = model.Midterm,
-            Final_Exam = model.Final_Exam,
-            Attendance = model.Attendance,
-            UpdatedAt = DateTime.Now
-        };
-        var result = workflow.Update(newMark);
-        if (result.Status == Message.SUCCESS)
-        {
-            return Ok(result);
+            return NotFound("Mark not found.");
         }
 
-        return BadRequest(result);
+        // Update the existing mark entity
+        existingMark.Midterm = model.Midterm;
+        existingMark.Final_Exam = model.Final_Exam;
+        existingMark.Attendance = model.Attendance;
+        existingMark.UpdatedAt = DateTime.Now;
+
+        var result = workflow.Update(existingMark);
+        if (result.Status == Message.SUCCESS)
+        {
+            return Ok(result.Result);
+        }
+
+        return BadRequest("An error occurred while updating the mark.");
     }
+
 
     [HttpDelete]
     public IActionResult Delete(int id)
