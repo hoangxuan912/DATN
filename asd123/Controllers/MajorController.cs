@@ -90,7 +90,7 @@ namespace asd123.Controllers
                 return NotFound("Major not found.");
             }
 
-            var departmentResponse = _uow.Departments.FindOne(model.DepartmentId);
+            var departmentResponse = _workflow.FindDepartmentById(model.DepartmentId);
             if (departmentResponse == null)
                 return BadRequest("Department not found.");
 

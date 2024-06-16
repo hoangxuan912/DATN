@@ -60,6 +60,22 @@ namespace asd123.UseCase.Major.Crud
             }
         }
 
+        public ResponseData FindDepartmentById(int id)
+        {
+            try
+            {
+                var existingDepartment = unitOfWork.Departments.FindOne(id);
+                if (existingDepartment == null)
+                {
+                    return new ResponseData(Message.ERROR, "Department not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingDepartment);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
         public ResponseData Create(asd123.Model.Major major)
         {
             try
