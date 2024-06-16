@@ -337,11 +337,11 @@ namespace asd123.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Final_Exam")
-                        .HasColumnType("int");
+                    b.Property<float>("Final_Exam")
+                        .HasColumnType("float");
 
-                    b.Property<int>("Midterm")
-                        .HasColumnType("int");
+                    b.Property<float>("Midterm")
+                        .HasColumnType("float");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -354,9 +354,11 @@ namespace asd123.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentId")
+                        .IsUnique();
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("SubjectId")
+                        .IsUnique();
 
                     b.ToTable("Marks");
                 });
@@ -522,14 +524,14 @@ namespace asd123.Migrations
             modelBuilder.Entity("asd123.Model.Marks", b =>
                 {
                     b.HasOne("asd123.Model.Students", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
+                        .WithOne("Marks")
+                        .HasForeignKey("asd123.Model.Marks", "StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("asd123.Model.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
+                        .WithOne("Marks")
+                        .HasForeignKey("asd123.Model.Marks", "SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -575,6 +577,18 @@ namespace asd123.Migrations
                     b.Navigation("Classes");
 
                     b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("asd123.Model.Students", b =>
+                {
+                    b.Navigation("Marks")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("asd123.Model.Subject", b =>
+                {
+                    b.Navigation("Marks")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

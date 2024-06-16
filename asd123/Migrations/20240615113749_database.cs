@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace asd123.Migrations
 {
     /// <inheritdoc />
-    public partial class hxun190 : Migration
+    public partial class database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,7 +75,7 @@ namespace asd123.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "longtext", nullable: false)
+                    Code = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -225,7 +225,7 @@ namespace asd123.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "longtext", nullable: false)
+                    Code = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -251,7 +251,7 @@ namespace asd123.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "longtext", nullable: false)
+                    Code = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -277,7 +277,7 @@ namespace asd123.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "longtext", nullable: false)
+                    Code = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -304,6 +304,8 @@ namespace asd123.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Sex = table.Column<string>(type: "longtext", nullable: false)
@@ -336,8 +338,8 @@ namespace asd123.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     StudentId = table.Column<int>(type: "int", nullable: false),
                     SubjectId = table.Column<int>(type: "int", nullable: false),
-                    Midterm = table.Column<int>(type: "int", nullable: false),
-                    Final_Exam = table.Column<int>(type: "int", nullable: false),
+                    Midterm = table.Column<float>(type: "float", nullable: false),
+                    Final_Exam = table.Column<float>(type: "float", nullable: false),
                     Attendance = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
@@ -398,9 +400,24 @@ namespace asd123.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Classes_Code",
+                table: "Classes",
+                column: "Code");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Classes_MajorId",
                 table: "Classes",
                 column: "MajorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_Code",
+                table: "Departments",
+                column: "Code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Majors_Code",
+                table: "Majors",
+                column: "Code");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Majors_DepartmentId",
@@ -410,17 +427,29 @@ namespace asd123.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Marks_StudentId",
                 table: "Marks",
-                column: "StudentId");
+                column: "StudentId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Marks_SubjectId",
                 table: "Marks",
-                column: "SubjectId");
+                column: "SubjectId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_ClassID",
                 table: "Students",
                 column: "ClassID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Students_Code",
+                table: "Students",
+                column: "Code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subjects_Code",
+                table: "Subjects",
+                column: "Code");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subjects_MajorId",

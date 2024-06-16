@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace asd123.Presenters.Mark;
 
-public class update_mark_oresenter
+public class update_mark_presenter
 {
     [Required] public int StudentId { get; set; }
     [Required] public int SubjectId { get; set; }

@@ -12,15 +12,15 @@ using asd123.Model;
 namespace asd123.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240531155116_hxun190")]
-    partial class hxun190
+    [Migration("20240615113749_database")]
+    partial class database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -231,7 +231,7 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -247,6 +247,8 @@ namespace asd123.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code");
 
                     b.HasIndex("MajorId");
 
@@ -267,7 +269,7 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -285,6 +287,8 @@ namespace asd123.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code");
+
                     b.ToTable("Departments");
                 });
 
@@ -298,8 +302,7 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .IsUnicode(true)
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -315,6 +318,8 @@ namespace asd123.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code");
 
                     b.HasIndex("DepartmentId");
 
@@ -335,11 +340,11 @@ namespace asd123.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Final_Exam")
-                        .HasColumnType("int");
+                    b.Property<float>("Final_Exam")
+                        .HasColumnType("float");
 
-                    b.Property<int>("Midterm")
-                        .HasColumnType("int");
+                    b.Property<float>("Midterm")
+                        .HasColumnType("float");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -352,9 +357,11 @@ namespace asd123.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentId")
+                        .IsUnique();
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("SubjectId")
+                        .IsUnique();
 
                     b.ToTable("Marks");
                 });
@@ -369,6 +376,10 @@ namespace asd123.Migrations
 
                     b.Property<int>("ClassID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("ContactNumber")
                         .HasColumnType("int");
@@ -398,6 +409,8 @@ namespace asd123.Migrations
 
                     b.HasIndex("ClassID");
 
+                    b.HasIndex("Code");
+
                     b.ToTable("Students");
                 });
 
@@ -411,7 +424,7 @@ namespace asd123.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -430,6 +443,8 @@ namespace asd123.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code");
 
                     b.HasIndex("MajorId");
 
@@ -512,14 +527,14 @@ namespace asd123.Migrations
             modelBuilder.Entity("asd123.Model.Marks", b =>
                 {
                     b.HasOne("asd123.Model.Students", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
+                        .WithOne("Marks")
+                        .HasForeignKey("asd123.Model.Marks", "StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("asd123.Model.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
+                        .WithOne("Marks")
+                        .HasForeignKey("asd123.Model.Marks", "SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -565,6 +580,18 @@ namespace asd123.Migrations
                     b.Navigation("Classes");
 
                     b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("asd123.Model.Students", b =>
+                {
+                    b.Navigation("Marks")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("asd123.Model.Subject", b =>
+                {
+                    b.Navigation("Marks")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

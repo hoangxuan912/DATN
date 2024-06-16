@@ -12,6 +12,7 @@ namespace asd123.Helpers
             services.AddAutoMapper(typeof(SubjectMapping));
             services.AddAutoMapper(typeof(ClassMapping));
             services.AddAutoMapper(typeof(student_mapping));
+            services.AddAutoMapper(typeof(mark_mapping));
 
             return services;
         }

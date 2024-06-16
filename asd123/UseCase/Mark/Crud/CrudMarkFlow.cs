@@ -12,11 +12,12 @@ public class CrudMarkFlow
     {
         _uow = uow;
     }
+
     public ResponseData List()
     {
         try
         {
-            var subjects = _uow.Subjects.FindAll();
+            var subjects = _uow.Marks.FindAll();
             return new ResponseData(Message.SUCCESS, subjects);
         }
         catch (Exception ex)
@@ -24,6 +25,7 @@ public class CrudMarkFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+
     public ResponseData FindMarkBySubjectId(int id)
     {
         try
@@ -33,6 +35,7 @@ public class CrudMarkFlow
             {
                 return new ResponseData(Message.ERROR, "Mark not found");
             }
+
             return new ResponseData(Message.SUCCESS, existingMark);
         }
         catch (Exception ex)
@@ -40,6 +43,7 @@ public class CrudMarkFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+
     public ResponseData FindMarkByStudentId(int id)
     {
         try
@@ -49,6 +53,7 @@ public class CrudMarkFlow
             {
                 return new ResponseData(Message.ERROR, "Mark not found");
             }
+
             return new ResponseData(Message.SUCCESS, existingMark);
         }
         catch (Exception ex)
@@ -56,6 +61,7 @@ public class CrudMarkFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+
     public ResponseData FindById(int id)
     {
         try
@@ -65,7 +71,45 @@ public class CrudMarkFlow
             {
                 return new ResponseData(Message.ERROR, "Mark not found");
             }
+
             return new ResponseData(Message.SUCCESS, existingMark);
+        }
+        catch (Exception ex)
+        {
+            return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+        }
+    }
+
+    public ResponseData FindStudentByID(int id)
+    {
+        try
+        {
+            var existingStudent = _uow.Students.FindOne(id);
+            if (existingStudent == null)
+            {
+                return new ResponseData(Message.ERROR, "Student not found");
+
+            }
+
+            return new ResponseData(Message.SUCCESS, existingStudent);
+        }
+        catch (Exception ex)
+        {
+            return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+        }
+    }
+    public ResponseData FindSubjectByID(int id)
+    {
+        try
+        {
+            var existingSubject = _uow.Subjects.FindOne(id);
+            if (existingSubject == null)
+            {
+                return new ResponseData(Message.ERROR, "Subject not found");
+
+            }
+
+            return new ResponseData(Message.SUCCESS, existingSubject);
         }
         catch (Exception ex)
         {
@@ -84,6 +128,7 @@ public class CrudMarkFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+
     public ResponseData Update(Model.Marks mrk)
     {
         try
@@ -97,6 +142,7 @@ public class CrudMarkFlow
             return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
         }
     }
+
     public ResponseData Delete(int id)
     {
         try

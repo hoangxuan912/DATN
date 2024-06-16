@@ -12,8 +12,8 @@ namespace asd123.Model
         public Students Student { get; set; }
         public int SubjectId { get; set; }
         public Subject Subject { get; set; }
-        public int Midterm { get; set; }
-        public int Final_Exam { get; set; }
+        public float Midterm { get; set; }
+        public float Final_Exam { get; set; }
         public int Attendance { get; set; }
     }
 }
