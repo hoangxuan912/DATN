@@ -6,6 +6,7 @@ public interface IMark: IBaseService<Marks>
 {
     IEnumerable<Marks> getAllMarkBySubjectId(int id);
     IEnumerable<Marks> getAllMarkByStudentId(int id);
+    Marks FindMarkByStudentAndSubject(int studentId, int subjectId);
 }
 
 public class MarkService : BaseService<Marks, ApplicationDbContext>, IMark
@@ -26,5 +27,10 @@ public class MarkService : BaseService<Marks, ApplicationDbContext>, IMark
     {
         var result = _ctx.Marks.Where(m => m.StudentId == id).ToList();
         return result;
+    }
+
+    public Marks FindMarkByStudentAndSubject(int studentId, int subjectId)
+    {
+        return _ctx.Marks.SingleOrDefault(m => m.StudentId == studentId && m.SubjectId == subjectId);
     }
 }

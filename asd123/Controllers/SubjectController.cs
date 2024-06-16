@@ -103,7 +103,7 @@ namespace asd123.Controllers
             // Update the existing major with new values
             existingSubject.Code = model.Code;
             existingSubject.Name = model.Name;
-            existingSubject.TotalCreadits = model.TotalCreadits;
+            existingSubject.TotalCredits = model.TotalCreadits;
             existingSubject.UpdatedAt = DateTime.Now;
             existingSubject.MajorId = model.MajorId;
 

@@ -12,8 +12,8 @@ using asd123.Model;
 namespace asd123.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240615113749_database")]
-    partial class database
+    [Migration("20240616172348_xcv")]
+    partial class xcv
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -357,11 +357,9 @@ namespace asd123.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique();
+                    b.HasIndex("StudentId");
 
-                    b.HasIndex("SubjectId")
-                        .IsUnique();
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Marks");
                 });
@@ -381,8 +379,9 @@ namespace asd123.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("ContactNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("ContactNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -436,7 +435,7 @@ namespace asd123.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("TotalCreadits")
+                    b.Property<int>("TotalCredits")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -527,14 +526,14 @@ namespace asd123.Migrations
             modelBuilder.Entity("asd123.Model.Marks", b =>
                 {
                     b.HasOne("asd123.Model.Students", "Student")
-                        .WithOne("Marks")
-                        .HasForeignKey("asd123.Model.Marks", "StudentId")
+                        .WithMany("Marks")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("asd123.Model.Subject", "Subject")
-                        .WithOne("Marks")
-                        .HasForeignKey("asd123.Model.Marks", "SubjectId")
+                        .WithMany("Marks")
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -584,14 +583,12 @@ namespace asd123.Migrations
 
             modelBuilder.Entity("asd123.Model.Students", b =>
                 {
-                    b.Navigation("Marks")
-                        .IsRequired();
+                    b.Navigation("Marks");
                 });
 
             modelBuilder.Entity("asd123.Model.Subject", b =>
                 {
-                    b.Navigation("Marks")
-                        .IsRequired();
+                    b.Navigation("Marks");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace asd123.Controllers;
 
-
 [Route("api/[controller]")]
 [ApiController]
 public class MarkController : ControllerBase
@@ -16,12 +15,14 @@ public class MarkController : ControllerBase
     CrudMarkFlow workflow;
     private readonly IUnitOfWork uow;
     private readonly IMapper _map;
+
     public MarkController(IUnitOfWork _uow, IMapper map)
     {
         uow = _uow;
         _map = map;
         workflow = new CrudMarkFlow(uow);
     }
+
     [HttpGet]
     [Route("GetAll")]
     public IActionResult GetAllMark()
@@ -34,7 +35,7 @@ public class MarkController : ControllerBase
 
         return BadRequest(result);
     }
-    
+
     [HttpGet]
     [Route("get_mark_by_subjectid")]
     public IActionResult GetBySubjectId(int id)
@@ -47,8 +48,8 @@ public class MarkController : ControllerBase
 
         return BadRequest(result);
     }
-    
-    
+
+
     [HttpGet]
     [Route("get_mark_by_studentid")]
     public IActionResult GetByStudentId(int id)
@@ -61,7 +62,7 @@ public class MarkController : ControllerBase
 
         return BadRequest(result);
     }
-    
+
     [HttpPost]
     public IActionResult CreateMark(create_mark_presenter createMark)
     {
@@ -75,39 +76,64 @@ public class MarkController : ControllerBase
         {
             return NotFound($"Student with ID {createMark.StudentId} not found.");
         }
-        
+
         var subject = workflow.FindSubjectByID(createMark.SubjectId);
         if (subject.Status == Message.ERROR)
         {
             return NotFound($"Subject with ID {createMark.SubjectId} not found.");
         }
 
-        
-        
-        var sbt = _map.Map<Marks>(createMark);
-        sbt.CreatedAt = DateTime.Now;
-        var createResult = workflow.Create(sbt);
+        var existingMarkResult = workflow.FindMarkByStudentAndSubject(createMark.StudentId, createMark.SubjectId);
+        if (existingMarkResult.Result != null)
+        {
+            return Conflict("A mark for this student and subject already exists. Please update the mark if you want to change it.");
+        }
+
+        // Create a new mark
+        var newMark = new Marks
+        {
+            StudentId = createMark.StudentId,
+            SubjectId = createMark.SubjectId,
+            Midterm = createMark.Midterm,
+            Final_Exam = createMark.Final_Exam,
+            Attendance = createMark.Attendance,
+            CreatedAt = DateTime.Now
+        };
+
+        var createResult = workflow.Create(newMark);
         if (createResult.Status == Message.SUCCESS)
         {
             return Ok(createResult.Result);
         }
 
-        return BadRequest("An error occurred while creating the major.");
+        return BadRequest("An error occurred while creating the mark.");
     }
+
+
     [HttpPut("{id}")]
     public IActionResult UpdateMark(update_mark_presenter model, int id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         var existingMarkResult = workflow.FindById(id);
         if (existingMarkResult.Status != Message.SUCCESS)
         {
             return NotFound("Mark not found.");
         }
 
-        // Update the existing major with new values
-        var existingMark = _map.Map<Marks>(model);
-        existingMark.UpdatedAt = DateTime.Now;
-
-        var result = workflow.Update(existingMark);
+        var MarkResult = existingMarkResult.Result as Marks;
+        var newMark = new Marks
+        {
+            StudentId = MarkResult.StudentId,
+            SubjectId = MarkResult.SubjectId,
+            Midterm = model.Midterm,
+            Final_Exam = model.Final_Exam,
+            Attendance = model.Attendance,
+            UpdatedAt = DateTime.Now
+        };
+        var result = workflow.Update(newMark);
         if (result.Status == Message.SUCCESS)
         {
             return Ok(result);
@@ -115,6 +141,7 @@ public class MarkController : ControllerBase
 
         return BadRequest(result);
     }
+
     [HttpDelete]
     public IActionResult Delete(int id)
     {

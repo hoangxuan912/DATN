@@ -62,6 +62,23 @@ public class CrudMarkFlow
         }
     }
 
+    public ResponseData FindMarkByStudentAndSubject(int studentId, int subjectId)
+    {
+        try
+        {
+            var existingMark = _uow.Marks.FindMarkByStudentAndSubject(studentId,subjectId);
+            if (existingMark != null)
+            {
+                return new ResponseData(Message.ERROR, "A mark for this student and subject already exists. Please update the mark if you want to change it.");
+            }
+
+            return new ResponseData(Message.SUCCESS, existingMark);
+        }
+        catch (Exception ex)
+        {
+            return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+        }
+    }
     public ResponseData FindById(int id)
     {
         try

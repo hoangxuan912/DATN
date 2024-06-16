@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace asd123.Migrations
 {
     /// <inheritdoc />
-    public partial class database : Migration
+    public partial class xcv : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -281,7 +281,7 @@ namespace asd123.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    TotalCreadits = table.Column<int>(type: "int", nullable: false),
+                    TotalCredits = table.Column<int>(type: "int", nullable: false),
                     MajorId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
@@ -313,7 +313,8 @@ namespace asd123.Migrations
                     Dob = table.Column<DateOnly>(type: "date", nullable: false),
                     HomeTown = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ContactNumber = table.Column<int>(type: "int", nullable: false),
+                    ContactNumber = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ClassID = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
@@ -427,14 +428,12 @@ namespace asd123.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Marks_StudentId",
                 table: "Marks",
-                column: "StudentId",
-                unique: true);
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Marks_SubjectId",
                 table: "Marks",
-                column: "SubjectId",
-                unique: true);
+                column: "SubjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Students_ClassID",
