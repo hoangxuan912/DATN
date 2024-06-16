@@ -131,7 +131,6 @@ public class MarkController : ControllerBase
             return NotFound("Mark not found.");
         }
 
-        // Update the existing mark entity
         existingMark.Midterm = model.Midterm;
         existingMark.Final_Exam = model.Final_Exam;
         existingMark.Attendance = model.Attendance;
