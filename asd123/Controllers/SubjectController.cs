@@ -49,6 +49,18 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
+        [HttpGet]
+        [Route("get_subject_by_code")]
+        public IActionResult GetSubjectById(string code)
+        {
+            var result = workflow.FindByCode(code);
+            if (result.Status == Message.SUCCESS)
+            {
+                return Ok(result.Result);
+            }
+
+            return BadRequest(result);
+        }
         
         [HttpPost]
         public IActionResult CreateSubject(CreateSubjectPresenter model)

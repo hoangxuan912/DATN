@@ -49,6 +49,18 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
+        [HttpGet]
+        [Route("get_major_by_code")]
+        public IActionResult GetMajorById(string code)
+        {
+            var result = _workflow.FindByCode(code);
+            if (result.Status == Message.SUCCESS)
+            {
+                return Ok(result.Result);
+            }
+
+            return BadRequest(result);
+        }
         [HttpPost]
         public IActionResult CreateMajor(CreateMajorRequest model)
         {

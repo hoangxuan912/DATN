@@ -61,7 +61,22 @@ namespace asd123.UseCase.Department.Crud
                 return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
             }
         }
-        
+        public ResponseData FindByCode(string code)
+        {
+            try
+            {
+                var existingDepartment = unitOfWork.Departments.GetCodeDepartment(code);
+                if (existingDepartment == null)
+                {
+                    return new ResponseData(Message.ERROR, "Department not found");
+                }
+                return new ResponseData(Message.SUCCESS, existingDepartment);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseData(Message.ERROR, $"An error occurred: {ex.Message}");
+            }
+        }
 
         public ResponseData Update(asd123.Model.Department department)
         {

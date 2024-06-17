@@ -46,6 +46,18 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
+        [HttpGet]
+        [Route("get_department_by_code")]
+        public IActionResult GetDepartmentByCode(string code)
+        {
+            var result = workflow.FindByCode(code);
+            if (result.Status == Message.SUCCESS)
+            {
+                return Ok(result.Result);
+            }
+
+            return BadRequest(result);
+        }
 
         [HttpPost]
         public IActionResult CreateDepartment(CreateDepartmentRequest model)

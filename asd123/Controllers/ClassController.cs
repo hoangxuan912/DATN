@@ -52,7 +52,19 @@ namespace asd123.Controllers
 
             return BadRequest(result);
         }
-        
+
+        [HttpGet]
+        [Route("get_class_by_code")]
+        public IActionResult GetClassByCode(string code)
+        {
+            var result = _workflow.FindByCode(code);
+            if (result.Status == Message.SUCCESS)
+            {
+                return Ok(result.Result);
+            }
+
+            return BadRequest(result);
+        }
         [HttpPost]
         public IActionResult CreateClass(CreateClassPresenter model)
         {

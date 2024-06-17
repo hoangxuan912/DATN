@@ -47,6 +47,19 @@ public class StudentController : Controller
         return BadRequest(result);
     }
     
+    [HttpGet]
+    [Route("get_student_by_code")]
+    public IActionResult GetStudentById(string code)
+    {
+        var result = workflow.FindByCode(code);
+        if (result.Status == Message.SUCCESS)
+        {
+            return Ok(result.Result);
+        }
+
+        return BadRequest(result);
+    }
+    
     [HttpPost]
     public IActionResult CreateStudent(create_student_presenter model)
     {
