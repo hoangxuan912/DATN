@@ -23,9 +23,18 @@ public class StudentController : Controller
     }
     [HttpGet]
     [Route("GetAll")]
-    public IActionResult GetAllStudent()
+    public IActionResult GetAllStudent(int pageNumber = 1, int pageSize = 10)
     {
-        var result = workflow.List();
+        if (pageNumber <= 0)
+        {
+            pageNumber = 1;
+        }
+
+        if (pageSize <= 0)
+        {
+            pageSize = 10;
+        }
+        var result = workflow.List(pageNumber, pageSize);
         if (result.Status == Message.SUCCESS)
         {
             return Ok(result.Result);

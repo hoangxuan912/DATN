@@ -13,12 +13,15 @@ public class CrudMarkFlow
         _uow = uow;
     }
 
-    public ResponseData List()
+    public ResponseData List(int pageNumber, int pageSize)
     {
         try
         {
-            var subjects = _uow.Marks.FindAll();
-            return new ResponseData(Message.SUCCESS, subjects);
+            var subjects = _uow.Marks.GetInstance();
+            var skip = (pageNumber - 1) * pageSize;
+            var take = pageSize;
+            var sub = subjects.Skip(skip).Take(take).ToList();
+            return new ResponseData(Message.SUCCESS, sub);
         }
         catch (Exception ex)
         {

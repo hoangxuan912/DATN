@@ -15,12 +15,15 @@ namespace asd123.UseCase.Major.Crud
             this.unitOfWork = unitOfWork;
         }
 
-        public ResponseData List()
+        public ResponseData List(int pageNumber, int pageSize)
         {
             try
             {
-                var majors = unitOfWork.Majors.FindAll();
-                return new ResponseData(Message.SUCCESS, majors);
+                var majors = unitOfWork.Majors.GetInstance();
+                var skip = (pageNumber - 1) * pageSize;
+                var take = pageSize;
+                var dmjsep = majors.Skip(skip).Take(take).ToList();
+                return new ResponseData(Message.SUCCESS, dmjsep);
             }
             catch (Exception ex)
             {

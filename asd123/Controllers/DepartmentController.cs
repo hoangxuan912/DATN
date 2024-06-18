@@ -24,9 +24,18 @@ namespace asd123.Controllers
         }
         [HttpGet]
         [Route("get_all_department")]
-        public IActionResult GetAllDepartment()
+        public IActionResult GetAllDepartment(int pageNumber = 1, int pageSize = 10)
         {
-            var result = workflow.List();
+            if (pageNumber <= 0)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize <= 0)
+            {
+                pageSize = 10;
+            }
+            var result = workflow.List(pageNumber, pageSize);
             if(result.Status == Message.SUCCESS)
             {   
                 return Ok(result.Result);

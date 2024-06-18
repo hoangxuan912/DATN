@@ -14,12 +14,15 @@ public class CrudStudentFlow
     {
         _uow = uow;
     }
-    public ResponseData List()
+    public ResponseData List(int pageNumber, int pageSize)
     {
         try
         {
-            var subjects = _uow.Students.FindAll();
-            return new ResponseData(Message.SUCCESS, subjects);
+            var subjects = _uow.Students.GetInstance();
+            var skip = (pageNumber - 1) * pageSize;
+            var take = pageSize;
+            var students = subjects.Skip(skip).Take(take).ToList();
+            return new ResponseData(Message.SUCCESS, students);
         }
         catch (Exception ex)
         {

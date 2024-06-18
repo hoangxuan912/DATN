@@ -19,12 +19,15 @@ namespace asd123.UseCase.Department.Crud
             this.unitOfWork = unitOfWork;
         }
 
-        public ResponseData List()
+        public ResponseData List(int pageNumber, int pageSize)
         {
             try
             {
-                var departments = unitOfWork.Departments.FindAll();
-                return new ResponseData(Message.SUCCESS, departments);
+                var departments = unitOfWork.Departments.GetInstance();
+                var skip = (pageNumber - 1) * pageSize;
+                var take = pageSize;
+                var dep = departments.Skip(skip).Take(take).ToList();
+                return new ResponseData(Message.SUCCESS, dep);
             }
             catch (Exception ex)
             {

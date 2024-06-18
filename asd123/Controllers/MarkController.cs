@@ -25,9 +25,18 @@ public class MarkController : ControllerBase
 
     [HttpGet]
     [Route("GetAll")]
-    public IActionResult GetAllMark()
+    public IActionResult GetAllMark(int pageNumber = 1, int pageSize = 10)
     {
-        var result = workflow.List();
+        if (pageNumber <= 0)
+        {
+            pageNumber = 1;
+        }
+
+        if (pageSize <= 0)
+        {
+            pageSize = 10;
+        }
+        var result = workflow.List(pageNumber, pageSize);
         if (result.Status == Message.SUCCESS)
         {
             return Ok(result.Result);

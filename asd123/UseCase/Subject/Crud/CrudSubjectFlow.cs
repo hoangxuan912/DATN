@@ -15,12 +15,15 @@ namespace asd123.UseCase.Subject.Crud
             this.unitOfWork = unitOfWork;
         }
 
-        public ResponseData List()
+        public ResponseData List(int pageNumber, int pageSize)
         {
             try
             {
-                var subjects = unitOfWork.Subjects.FindAll();
-                return new ResponseData(Message.SUCCESS, subjects);
+                var subjects = unitOfWork.Subjects.GetInstance();
+                var skip = (pageNumber - 1) * pageSize;
+                var take = pageSize;
+                var subs = subjects.Skip(skip).Take(take).ToList();
+                return new ResponseData(Message.SUCCESS, subs);
             }
             catch (Exception ex)
             {

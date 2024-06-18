@@ -12,12 +12,15 @@ namespace asd123.UseCase.Class.Crud
         {
             _uow = uow;
         }
-        public ResponseData List()
+        public ResponseData List(int pageNumber, int pageSize)
         {
             try
             {
-                var existingClass = _uow.Class.FindAll();
-                return new ResponseData(Message.SUCCESS, existingClass);
+                var existingClass = _uow.Class.GetInstance();
+                var skip = (pageNumber - 1) * pageSize;
+                var take = pageSize;
+                var cls = existingClass.Skip(skip).Take(take).ToList();
+                return new ResponseData(Message.SUCCESS, cls);
             }
             catch (Exception ex)
             {
