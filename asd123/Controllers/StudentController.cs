@@ -1,3 +1,4 @@
+using asd123.Biz.Roles;
 using asd123.Model;
 using asd123.Presenters.Student;
 using asd123.Services;
@@ -5,6 +6,7 @@ using asd123.Ultil;
 using asd123.UseCase.Student.Crud;
 using asd123.UseCase.Subject.Crud;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace asd123.Controllers;
@@ -23,6 +25,7 @@ public class StudentController : Controller
     }
     [HttpGet]
     [Route("GetAll")]
+    [Authorize(Roles = UserRoles.User)]
     public IActionResult GetAllStudent(int pageNumber = 1, int pageSize = 10)
     {
         if (pageNumber <= 0)

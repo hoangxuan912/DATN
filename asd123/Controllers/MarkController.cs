@@ -1,15 +1,18 @@
+using asd123.Biz.Roles;
 using asd123.Model;
 using asd123.Presenters.Mark;
 using asd123.Services;
 using asd123.Ultil;
 using asd123.UseCase.Mark.Crud;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace asd123.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = UserRoles.User)]
 public class MarkController : ControllerBase
 {
     CrudMarkFlow workflow;

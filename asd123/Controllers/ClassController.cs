@@ -1,4 +1,5 @@
-﻿using asd123.Model;
+﻿using asd123.Biz.Roles;
+using asd123.Model;
 using asd123.Presenters.Class;
 using asd123.Presenters.Subject;
 using asd123.Services;
@@ -7,6 +8,7 @@ using asd123.UseCase.Class.Crud;
 using asd123.UseCase.Major.Crud;
 using asd123.UseCase.Subject.Crud;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +16,7 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.User)]
     public class ClassController : ControllerBase
     {
         CrudClassFlow _workflow;
