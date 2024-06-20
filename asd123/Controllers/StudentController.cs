@@ -25,7 +25,7 @@ public class StudentController : Controller
     }
     [HttpGet]
     [Route("GetAll")]
-    [Authorize(Roles = UserRoles.User)]
+    //[Authorize(Roles = UserRoles.User)]
     public IActionResult GetAllStudent(int pageNumber = 1, int pageSize = 10)
     {
         if (pageNumber <= 0)

@@ -13,7 +13,7 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.User)]
+    // [Authorize(Roles = UserRoles.User)]
     public class DepartmentController : ControllerBase
     {
         CrudDepartmentFlow workflow;
