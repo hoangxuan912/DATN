@@ -22,6 +22,48 @@ namespace asd123.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("Diem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<float?>("DiemBaiTap")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemChuyenCan")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemKiemTraGiuaKi")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemThi")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemThucHanh")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("MaMonHoc")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MaSinhVien")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaMonHoc");
+
+                    b.HasIndex("MaSinhVien");
+
+                    b.ToTable("Diems");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -85,6 +127,11 @@ namespace asd123.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("varchar(13)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
@@ -135,6 +182,10 @@ namespace asd123.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -165,10 +216,12 @@ namespace asd123.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext");
@@ -205,10 +258,12 @@ namespace asd123.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
@@ -243,48 +298,6 @@ namespace asd123.Migrations
                     b.HasIndex("MaKhoa");
 
                     b.ToTable("ChuyenNganhs");
-                });
-
-            modelBuilder.Entity("asd123.Model.Diem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<float?>("DiemBaiTap")
-                        .HasColumnType("float");
-
-                    b.Property<float?>("DiemChuyenCan")
-                        .HasColumnType("float");
-
-                    b.Property<float?>("DiemKiemTraGiuaKi")
-                        .HasColumnType("float");
-
-                    b.Property<float?>("DiemThi")
-                        .HasColumnType("float");
-
-                    b.Property<float?>("DiemThucHanh")
-                        .HasColumnType("float");
-
-                    b.Property<Guid>("MaMonHoc")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("MaSinhVien")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MaMonHoc");
-
-                    b.HasIndex("MaSinhVien");
-
-                    b.ToTable("Diems");
                 });
 
             modelBuilder.Entity("asd123.Model.Khoa", b =>
@@ -406,6 +419,44 @@ namespace asd123.Migrations
                     b.ToTable("SinhViens");
                 });
 
+            modelBuilder.Entity("asd123.Model.User", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("RefreshTokenExpiry")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasDiscriminator().HasValue("User");
+                });
+
+            modelBuilder.Entity("Diem", b =>
+                {
+                    b.HasOne("asd123.Model.MonHoc", "MonHoc")
+                        .WithMany()
+                        .HasForeignKey("MaMonHoc")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asd123.Model.SinhVien", "SinhVien")
+                        .WithMany("Diems")
+                        .HasForeignKey("MaSinhVien")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MonHoc");
+
+                    b.Navigation("SinhVien");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -466,25 +517,6 @@ namespace asd123.Migrations
                         .IsRequired();
 
                     b.Navigation("Khoa");
-                });
-
-            modelBuilder.Entity("asd123.Model.Diem", b =>
-                {
-                    b.HasOne("asd123.Model.MonHoc", "MonHoc")
-                        .WithMany()
-                        .HasForeignKey("MaMonHoc")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("asd123.Model.SinhVien", "SinhVien")
-                        .WithMany("Diems")
-                        .HasForeignKey("MaSinhVien")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MonHoc");
-
-                    b.Navigation("SinhVien");
                 });
 
             modelBuilder.Entity("asd123.Model.Lop", b =>

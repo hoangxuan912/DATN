@@ -16,12 +16,13 @@ namespace asd123.Model
             : base(options)
         {
         }
-        public virtual DbSet<Lop> Lops { get; set; }
-        public virtual DbSet<Khoa> Khoas { get; set; }
-        public virtual DbSet<ChuyenNganh> ChuyenNganhs { get; set; }
-        public virtual DbSet<Diem> Diems { get; set; }
-        public virtual DbSet<SinhVien> SinhViens { get; set; }
-        public virtual DbSet<MonHoc> MonHocs { get; set; }
+        public  DbSet<Lop> Lops { get; set; }
+        public  DbSet<Khoa> Khoas { get; set; }
+        public  DbSet<ChuyenNganh> ChuyenNganhs { get; set; }
+        public  DbSet<Diem> Diems { get; set; }
+        public  DbSet<SinhVien> SinhViens { get; set; }
+        public DbSet<MonHoc> MonHocs { get; set; }
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

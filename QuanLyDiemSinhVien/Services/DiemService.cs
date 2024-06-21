@@ -1,5 +1,8 @@
+using System.Globalization;
 using asd123.DTO;
 using asd123.Model;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace asd123.Services;
@@ -108,9 +111,60 @@ public class DiemService : IDiem
     }
     private float? CalculateDiemTB(IEnumerable<Diem> diems)
     {
-        // Một phương thức giả định để tính toán điểm trung bình từ các điểm chi tiết có trong Diem
-        // Đây là phần logic nghiệp vụ mà bạn cần xác định dựa trên quy định tính điểm của trường/lớp
+        if (diems == null || !diems.Any())
+        {
+            return null; // Return null or handle empty collection based on your business logic
+        }
 
-        return 0; // Trả về giá trị mặc định, bạn cần thực hiện tính toán thực tế tại đây
+        float totalScore = 0;
+        int totalComponents = 0;
+
+        foreach (var diem in diems)
+        {
+            // Consider how to weigh each component based on your grading policy
+            // For example, if all components are equally weighted:
+            if (diem.DiemChuyenCan.HasValue)
+            {
+                totalScore += diem.DiemChuyenCan.Value;
+                totalComponents++;
+            }
+
+            if (diem.DiemBaiTap.HasValue)
+            {
+                totalScore += diem.DiemBaiTap.Value;
+                totalComponents++;
+            }
+
+            if (diem.DiemThucHanh.HasValue)
+            {
+                totalScore += diem.DiemThucHanh.Value;
+                totalComponents++;
+            }
+
+            if (diem.DiemKiemTraGiuaKi.HasValue)
+            {
+                totalScore += diem.DiemKiemTraGiuaKi.Value;
+                totalComponents++;
+            }
+
+            if (diem.DiemThi.HasValue)
+            {
+                totalScore += diem.DiemThi.Value;
+                totalComponents++;
+            }
+        }
+
+        if (totalComponents > 0)
+        {
+            // Calculate the average score
+            float averageScore = totalScore / totalComponents;
+            return averageScore;
+        }
+        else
+        {
+            return null; // Handle case where no valid components were found
+        }
     }
+
+    
 }

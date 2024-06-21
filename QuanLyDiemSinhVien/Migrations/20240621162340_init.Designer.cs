@@ -12,8 +12,8 @@ using asd123.Model;
 namespace asd123.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240616172348_xcv")]
-    partial class xcv
+    [Migration("20240621162340_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,48 @@ namespace asd123.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("Diem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<float?>("DiemBaiTap")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemChuyenCan")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemKiemTraGiuaKi")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemThi")
+                        .HasColumnType("float");
+
+                    b.Property<float?>("DiemThucHanh")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("MaMonHoc")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MaSinhVien")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaMonHoc");
+
+                    b.HasIndex("MaSinhVien");
+
+                    b.ToTable("Diems");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -88,6 +130,11 @@ namespace asd123.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("varchar(13)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
@@ -138,6 +185,10 @@ namespace asd123.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -168,10 +219,12 @@ namespace asd123.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext");
@@ -208,10 +261,12 @@ namespace asd123.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
@@ -221,233 +276,188 @@ namespace asd123.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Class", b =>
+            modelBuilder.Entity("asd123.Model.ChuyenNganh", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Code")
+                    b.Property<Guid>("MaKhoa")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("TenChuyenNganh")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("MajorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code");
+                    b.HasIndex("MaKhoa");
 
-                    b.HasIndex("MajorId");
-
-                    b.ToTable("Classes");
+                    b.ToTable("ChuyenNganhs");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Department", b =>
+            modelBuilder.Entity("asd123.Model.Khoa", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Address")
+                    b.Property<string>("TenKhoa")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code");
-
-                    b.ToTable("Departments");
+                    b.ToTable("Khoas");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Major", b =>
+            modelBuilder.Entity("asd123.Model.Lop", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Code")
+                    b.Property<Guid>("MaChuyenNganh")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("TenLop")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code");
+                    b.HasIndex("MaChuyenNganh");
 
-                    b.HasIndex("DepartmentId");
-
-                    b.ToTable("Majors");
+                    b.ToTable("Lops");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Marks", b =>
+            modelBuilder.Entity("asd123.Model.MonHoc", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Attendance")
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<float>("Final_Exam")
-                        .HasColumnType("float");
+                    b.Property<Guid>("MaChuyenNganh")
+                        .HasColumnType("char(36)");
 
-                    b.Property<float>("Midterm")
-                        .HasColumnType("float");
-
-                    b.Property<int>("StudentId")
+                    b.Property<int>("SoTinChi")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("Marks");
-                });
-
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Students", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClassID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
+                    b.Property<string>("TenMonHoc")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("ContactNumber")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateOnly>("Dob")
-                        .HasColumnType("date");
-
-                    b.Property<string>("HomeTown")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Sex")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassID");
+                    b.HasIndex("MaChuyenNganh");
 
-                    b.HasIndex("Code");
-
-                    b.ToTable("Students");
+                    b.ToTable("MonHocs");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Subject", b =>
+            modelBuilder.Entity("asd123.Model.SinhVien", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("MajorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<int>("TotalCredits")
-                        .HasColumnType("int");
+                    b.Property<string>("HoTen")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<Guid>("MaLop")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("NgaySinh")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("SoDienThoai")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Code");
+                    b.HasIndex("MaLop");
 
-                    b.HasIndex("MajorId");
+                    b.ToTable("SinhViens");
+                });
 
-                    b.ToTable("Subjects");
+            modelBuilder.Entity("asd123.Model.User", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("RefreshTokenExpiry")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasDiscriminator().HasValue("User");
+                });
+
+            modelBuilder.Entity("Diem", b =>
+                {
+                    b.HasOne("asd123.Model.MonHoc", "MonHoc")
+                        .WithMany()
+                        .HasForeignKey("MaMonHoc")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("asd123.Model.SinhVien", "SinhVien")
+                        .WithMany("Diems")
+                        .HasForeignKey("MaSinhVien")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MonHoc");
+
+                    b.Navigation("SinhVien");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -501,94 +511,68 @@ namespace asd123.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Class", b =>
+            modelBuilder.Entity("asd123.Model.ChuyenNganh", b =>
                 {
-                    b.HasOne("QuanLyDiemSinhVien.Model.Major", "Major")
-                        .WithMany("Classes")
-                        .HasForeignKey("MajorId")
+                    b.HasOne("asd123.Model.Khoa", "Khoa")
+                        .WithMany("ChuyenNganhs")
+                        .HasForeignKey("MaKhoa")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Major");
+                    b.Navigation("Khoa");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Major", b =>
+            modelBuilder.Entity("asd123.Model.Lop", b =>
                 {
-                    b.HasOne("QuanLyDiemSinhVien.Model.Department", "Department")
-                        .WithMany("majors")
-                        .HasForeignKey("DepartmentId")
+                    b.HasOne("asd123.Model.ChuyenNganh", "ChuyenNganh")
+                        .WithMany("Lops")
+                        .HasForeignKey("MaChuyenNganh")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Department");
+                    b.Navigation("ChuyenNganh");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Marks", b =>
+            modelBuilder.Entity("asd123.Model.MonHoc", b =>
                 {
-                    b.HasOne("QuanLyDiemSinhVien.Model.Students", "Student")
-                        .WithMany("Marks")
-                        .HasForeignKey("StudentId")
+                    b.HasOne("asd123.Model.ChuyenNganh", "ChuyenNganh")
+                        .WithMany()
+                        .HasForeignKey("MaChuyenNganh")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QuanLyDiemSinhVien.Model.Subject", "Subject")
-                        .WithMany("Marks")
-                        .HasForeignKey("SubjectId")
+                    b.Navigation("ChuyenNganh");
+                });
+
+            modelBuilder.Entity("asd123.Model.SinhVien", b =>
+                {
+                    b.HasOne("asd123.Model.Lop", "Lop")
+                        .WithMany("SinhViens")
+                        .HasForeignKey("MaLop")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Student");
-
-                    b.Navigation("Subject");
+                    b.Navigation("Lop");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Students", b =>
+            modelBuilder.Entity("asd123.Model.ChuyenNganh", b =>
                 {
-                    b.HasOne("QuanLyDiemSinhVien.Model.Class", "Class")
-                        .WithMany("Students")
-                        .HasForeignKey("ClassID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Class");
+                    b.Navigation("Lops");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Subject", b =>
+            modelBuilder.Entity("asd123.Model.Khoa", b =>
                 {
-                    b.HasOne("QuanLyDiemSinhVien.Model.Major", "Major")
-                        .WithMany("Subjects")
-                        .HasForeignKey("MajorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Major");
+                    b.Navigation("ChuyenNganhs");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Class", b =>
+            modelBuilder.Entity("asd123.Model.Lop", b =>
                 {
-                    b.Navigation("Students");
+                    b.Navigation("SinhViens");
                 });
 
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Department", b =>
+            modelBuilder.Entity("asd123.Model.SinhVien", b =>
                 {
-                    b.Navigation("majors");
-                });
-
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Major", b =>
-                {
-                    b.Navigation("Classes");
-
-                    b.Navigation("Subjects");
-                });
-
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Students", b =>
-                {
-                    b.Navigation("Marks");
-                });
-
-            modelBuilder.Entity("QuanLyDiemSinhVien.Model.Subject", b =>
-                {
-                    b.Navigation("Marks");
+                    b.Navigation("Diems");
                 });
 #pragma warning restore 612, 618
         }

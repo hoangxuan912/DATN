@@ -1,8 +1,8 @@
+using asd123.DTO;
 using asd123.Model;
 using asd123.Services;
 
 namespace asd123.Controllers;
-
 
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,92 +14,167 @@ using System.Threading.Tasks;
 public class MonHocController : ControllerBase
 {
     private readonly IMonHoc _monHocService;
+    private readonly ILogger<MonHocController> _logger;
 
-    public MonHocController(IMonHoc monHocService)
+    public MonHocController(IMonHoc monHocService, ILogger<MonHocController> logger)
     {
         _monHocService = monHocService;
+        _logger = logger;
     }
 
-    // GET: api/MonHoc
+    // API lấy tất cả môn học
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MonHoc>>> GetAllMonHoc()
+    public async Task<IActionResult> GetAllMonHoc()
     {
-        return Ok(await _monHocService.GetAllMonHocAsync());
+        try
+        {
+            var monHocs = await _monHocService.GetAllMonHocAsync();
+            // Chuyển đổi sang DTO (được giả định đã tạo) trước khi trả về
+            return Ok(monHocs);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside GetAllMonHocs action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-    // GET: api/MonHoc/{id}
+    // API lấy một môn học theo ID
     [HttpGet("{id}")]
-    public async Task<ActionResult<MonHoc>> GetMonHocById(Guid id)
+    public async Task<IActionResult> GetMonHocById(Guid id)
     {
-        var monHoc = await _monHocService.GetMonHocByIdAsync(id);
-        if (monHoc == null)
+        try
         {
-            return NotFound();
+            var monHoc = await _monHocService.GetMonHocByIdAsync(id);
+            if (monHoc == null)
+            {
+                _logger.LogError($"MonHoc with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
+
+            // Chuyển đổi sang DTO (được giả định đã tạo) 
+            return Ok(monHoc);
         }
-        return Ok(monHoc);
+        catch (Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside GetMonHocById action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-    // POST: api/MonHoc
+    // API tạo mới một môn học
     [HttpPost]
-    public async Task<ActionResult<MonHoc>> CreateMonHoc([FromBody] MonHoc monHoc)
+    public async Task<IActionResult> CreateMonHoc([FromBody] MonHoc monHoc)
     {
-        if (monHoc == null)
+        try
         {
-            return BadRequest("MonHoc data is null");
-        }
+            if (monHoc == null)
+            {
+                _logger.LogError("MonHoc object sent from client is null.");
+                return BadRequest("MonHoc object is null");
+            }
 
-        var createdMonHoc = await _monHocService.CreateMonHocAsync(monHoc);
-        return CreatedAtAction(nameof(GetMonHocById), new { id = createdMonHoc.Id }, createdMonHoc);
+            await _monHocService.CreateMonHocAsync(monHoc);
+            return CreatedAtRoute("MonHocById", new { id = monHoc.Id }, monHoc);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside CreateMonHoc action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-    // PUT: api/MonHoc/{id}
+    // API cập nhật môn học
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateMonHoc(Guid id, [FromBody] MonHoc monHoc)
     {
-        if (id != monHoc.Id)
+        try
         {
-            return BadRequest("MonHoc ID mismatch");
-        }
+            if (monHoc == null)
+            {
+                _logger.LogError("MonHoc object sent from client is null.");
+                return BadRequest("MonHoc object is null");
+            }
 
-        var existingMonHoc = await _monHocService.GetMonHocByIdAsync(id);
-        if (existingMonHoc == null)
+            var dbMonHoc = await _monHocService.GetMonHocByIdAsync(id);
+            if (dbMonHoc == null)
+            {
+                _logger.LogError($"MonHoc with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
+
+            await _monHocService.UpdateMonHocAsync(monHoc);
+
+            return NoContent();
+        }
+        catch (Exception ex)
         {
-            return NotFound("The MonHoc record couldn't be found.");
+            _logger.LogError($"Something went wrong inside UpdateMonHoc action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
         }
-
-        await _monHocService.UpdateMonHocAsync(monHoc);
-        return NoContent();
     }
 
-    // DELETE: api/MonHoc/{id}
+    // API xóa môn học
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMonHoc(Guid id)
     {
-        var monHocToDelete = await _monHocService.GetMonHocByIdAsync(id);
-        if (monHocToDelete == null)
+        try
         {
-            return NotFound("The MonHoc record couldn't be found.");
-        }
+            var monHoc = await _monHocService.GetMonHocByIdAsync(id);
+            if (monHoc == null)
+            {
+                _logger.LogError($"MonHoc with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
 
-        await _monHocService.DeleteMonHocAsync(id);
-        return NoContent();
+            await _monHocService.DeleteMonHocAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside DeleteMonHoc action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-    // GET: api/MonHoc/GetMonHocByChuyenNganhId/{chuyenNganhId}
+
+// GET: api/MonHoc/GetMonHocByChuyenNganhId/{chuyenNganhId}
     [HttpGet("GetMonHocByChuyenNganhId/{chuyenNganhId}")]
-    public async Task<ActionResult<IEnumerable<MonHoc>>> GetMonHocByChuyenNganhId(Guid chuyenNganhId)
+    public async Task<ActionResult<IEnumerable<MonHocDTO>>> GetMonHocByChuyenNganhId(Guid chuyenNganhId)
     {
-        return Ok(await _monHocService.GetMonHocByChuyenNganhIdAsync(chuyenNganhId));
+        try
+        {
+            var monHocs = await _monHocService.GetMonHocByChuyenNganhIdAsync(chuyenNganhId);
+            // Chuyển đổi monHocs sang MonHocDTO (giả sử đã có hàm chuyển đổi)
+            return Ok(monHocs); // Sử dụng DTO thay vì entity trực tiếp
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside GetMonHocByChuyenNganhId action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-    // GET: api/MonHoc/SearchMonHocByName/{name}
+// GET: api/MonHoc/SearchMonHocByName/{name}
     [HttpGet("SearchMonHocByName/{name}")]
-    public async Task<ActionResult<IEnumerable<MonHoc>>> SearchMonHocByName(string name)
+    public async Task<ActionResult<IEnumerable<MonHocDTO>>> SearchMonHocByName(string name)
     {
-        if (string.IsNullOrEmpty(name))
+        try
         {
-            return BadRequest("Search text is null or empty.");
+            if (string.IsNullOrEmpty(name))
+            {
+                _logger.LogWarning("SearchMonHocByName called with null or empty search text.");
+                return BadRequest("Search text is null or empty.");
+            }
+
+            var monHocs = await _monHocService.SearchMonHocByNameAsync(name);
+            // Chuyển đổi monHocs sang MonHocDTO (giả sử đã có hàm chuyển đổi)
+            return Ok(monHocs); // Sử dụng DTO thay vì entity trực tiếp
         }
-        return Ok(await _monHocService.SearchMonHocByNameAsync(name));
+        catch (Exception ex)
+        {
+            _logger.LogError($"Something went wrong inside SearchMonHocByName action: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
     }
 }

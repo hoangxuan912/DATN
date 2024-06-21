@@ -1,32 +1,82 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using asd123.Model;
 
-namespace asd123.Model
+public class Diem : BaseSchema
 {
-    public class Diem : BaseSchema
+    public Guid MaSinhVien { get; set; }
+
+    [ForeignKey("MaSinhVien")]
+    public SinhVien SinhVien { get; set; }
+
+    public Guid MaMonHoc { get; set; }
+
+    [ForeignKey("MaMonHoc")]
+    public MonHoc MonHoc { get; set; }
+
+    public float? DiemChuyenCan { get; set; }
+    public float? DiemBaiTap { get; set; }
+    public float? DiemThucHanh { get; set; }
+    public float? DiemKiemTraGiuaKi { get; set; }
+    public float? DiemThi { get; set; }
+
+    [NotMapped]
+    public float DiemTongKet 
     {
-        public Guid MaSinhVien { get; set; }
+        get
+        {
+            // Calculate DiemTongKet based on your business logic
+            // Example: Weighted average of different components
+            float totalScore = 0;
+            float totalWeight = 0;
 
-        [ForeignKey("MaSinhVien")]
-        public SinhVien SinhVien { get; set; }
+            if (DiemChuyenCan.HasValue)
+            {
+                totalScore += DiemChuyenCan.Value * WeightChuyenCan;
+                totalWeight += WeightChuyenCan;
+            }
 
-        public Guid MaMonHoc { get; set; }
+            if (DiemBaiTap.HasValue)
+            {
+                totalScore += DiemBaiTap.Value * WeightBaiTap;
+                totalWeight += WeightBaiTap;
+            }
 
-        [ForeignKey("MaMonHoc")]
-        public MonHoc MonHoc { get; set; }
+            if (DiemThucHanh.HasValue)
+            {
+                totalScore += DiemThucHanh.Value * WeightThucHanh;
+                totalWeight += WeightThucHanh;
+            }
 
-        public float? DiemChuyenCan { get; set; }
-        public float? DiemBaiTap { get; set; }
-        public float? DiemThucHanh { get; set; }
-        public float? DiemKiemTraGiuaKi { get; set; }
-        public float? DiemThi { get; set; }
+            if (DiemKiemTraGiuaKi.HasValue)
+            {
+                totalScore += DiemKiemTraGiuaKi.Value * WeightKiemTraGiuaKi;
+                totalWeight += WeightKiemTraGiuaKi;
+            }
 
-        [NotMapped]
-        public float DiemTongKet { get; set; }
+            if (DiemThi.HasValue)
+            {
+                totalScore += DiemThi.Value * WeightThi;
+                totalWeight += WeightThi;
+            }
+
+            // Avoid division by zero
+            if (totalWeight > 0)
+            {
+                return totalScore / totalWeight;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        set { } // Optional setter, depending on your needs
     }
 
+    // Example weights for different components (adjust as per your grading system)
+    private const float WeightChuyenCan = 0.1f;
+    private const float WeightBaiTap = 0.2f;
+    private const float WeightThucHanh = 0.3f;
+    private const float WeightKiemTraGiuaKi = 0.2f;
+    private const float WeightThi = 0.2f;
 }
