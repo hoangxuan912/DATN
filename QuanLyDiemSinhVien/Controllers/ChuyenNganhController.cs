@@ -68,7 +68,11 @@ public class ChuyenNganhController : ControllerBase
         try
         {
             // Map từ DTO sang model
-            var chuyenNganhModel = new ChuyenNganh { TenChuyenNganh = chuyenNganhDto.TenChuyenNganh };
+            var chuyenNganhModel = new ChuyenNganh
+            {
+                TenChuyenNganh = chuyenNganhDto.TenChuyenNganh,
+                MaKhoa = chuyenNganhDto.MaKhoa
+            };
 
             var createdChuyenNganh = await _chuyenNganhService.CreateChuyenNganhAsync(chuyenNganhModel);
             _logger.LogInformation($"ChuyenNganh with ID {createdChuyenNganh.Id} created successfully.");
@@ -101,6 +105,7 @@ public class ChuyenNganhController : ControllerBase
 
             // Map từ DTO sang model, cập nhật dữ liệu
             chuyenNganhFromDb.TenChuyenNganh = chuyenNganhDto.TenChuyenNganh;
+            chuyenNganhFromDb.MaKhoa = chuyenNganhDto.MaKhoa;
             // ... update other fields
 
             await _chuyenNganhService.UpdateChuyenNganhAsync(chuyenNganhFromDb);

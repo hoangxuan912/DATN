@@ -36,7 +36,6 @@ builder.Services.AddDefaultIdentity<User>(options => {
 
 // builder.Services.AddScoped<IExcelDataService, ExcelDataService>();
 builder.Services.AddScoped<IEmailservice, Emailservice>();
-builder.Services.AddScoped<AuthorisationServices>();
 builder.Services.AddScoped<IKhoaService, KhoaService>();
 builder.Services.AddScoped<IChuyenNganh, ChuyenNganhService>();
 builder.Services.AddScoped<IDiem, DiemService>();
@@ -47,7 +46,6 @@ builder.Services.AddScoped<IThongKeService, ThongKeService>();
 builder.Services.AddAutoMapper(typeof(Program)); 
 builder.Services.AddSingleton(emailConfig!);
 /***My Own Services***/
-builder.Services.AddScoped<IEmailservice, Emailservice>();
 builder.Services.AddScoped<AuthorisationServices>();
 
 /***Policies builder***/
@@ -116,7 +114,6 @@ app.MapControllers();
 /***Adding the role we want in th/Errore database***/
 /***On Comments this sections when your connections string will be set***/
 /*
- 
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -127,6 +124,5 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 }
-
 */
 app.Run();

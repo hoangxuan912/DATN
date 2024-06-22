@@ -31,12 +31,6 @@ namespace asd123.Controllers
             _logger = logger;
         }
 
-        public DiemController(IDiem diemService, ILogger<DiemController> logger)
-        {
-            _diemService = diemService;
-            _logger = logger;
-        }
-
         // POST: api/Diem/NhapDiem
         [HttpPost("NhapDiem")]
         public async Task<ActionResult<NhapDiemResponse>> NhapDiem(Guid sinhVienId, Guid monHocId, [FromBody] DiemDTO diemDTO)
