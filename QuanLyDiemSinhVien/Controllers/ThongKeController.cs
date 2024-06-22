@@ -5,11 +5,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using asd123.Biz.Roles;
+using Microsoft.AspNetCore.Authorization;
 
 namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.User )]
     public class ThongKeController : ControllerBase
     {
         private readonly IThongKeService _thongKeService;

@@ -1,7 +1,9 @@
+using asd123.Biz.Roles;
 using asd123.DTO;
 using asd123.Model;
 using asd123.Presenters.Department;
 using asd123.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace asd123.Controllers;
@@ -9,6 +11,7 @@ namespace asd123.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = UserRoles.User )]
 public class KhoaController : ControllerBase
 {
     private readonly IKhoaService _khoaService;

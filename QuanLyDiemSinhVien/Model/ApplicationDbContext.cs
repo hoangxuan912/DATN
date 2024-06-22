@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace asd123.Model
 {
-    public partial class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
         {

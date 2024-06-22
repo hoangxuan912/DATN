@@ -1,12 +1,15 @@
+using asd123.Biz.Roles;
 using asd123.DTO;
 using asd123.Model;
 using asd123.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace asd123.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = UserRoles.User )]
 public class ChuyenNganhController : ControllerBase
 {
     private readonly IChuyenNganh _chuyenNganhService;

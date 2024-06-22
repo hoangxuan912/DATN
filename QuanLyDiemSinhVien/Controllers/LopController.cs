@@ -1,6 +1,8 @@
+using asd123.Biz.Roles;
 using asd123.DTO;
 using asd123.Model;
 using asd123.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace asd123.Controllers;
 
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = UserRoles.User )]
 public class LopController : ControllerBase
 {
     private readonly ILop _lopService;

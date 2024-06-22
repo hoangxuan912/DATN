@@ -7,27 +7,28 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using asd123.Biz.Roles;
 using asd123.DTO;
 using asd123.Model;
 using asd123.Services;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using OfficeOpenXml;
 
 namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.User )]
     public class DiemController : ControllerBase
     {
         private readonly IDiem _diemService;
-        private readonly IEmailservice _emailService;
         private readonly ILogger<DiemController> _logger;
 
-        public DiemController(IDiem diemService, IEmailservice emailService, ILogger<DiemController> logger)
+        public DiemController(IDiem diemService,  ILogger<DiemController> logger)
         {
             _diemService = diemService;
-            _emailService = emailService;
             _logger = logger;
         }
 
@@ -156,35 +157,35 @@ namespace asd123.Controllers
             _logger.LogInformation($"Average score calculated successfully for student with ID: {sinhVienId}");
             return Ok(response);
         }
-        [HttpGet("SendDiemByEmail/{sinhVienId}")]
-        public async Task<IActionResult> SendDiemByEmail(Guid sinhVienId)
-        {
-            _logger.LogInformation($"Sending score report by email for student with ID: {sinhVienId}");
-
-            try
-            {
-                var diems = await _diemService.GetAllDiemBySinhVienIdAsync(sinhVienId);
-                if (diems == null || !diems.Any())
-                {
-                    _logger.LogWarning($"No scores found for student with ID: {sinhVienId}");
-                    return NotFound("No scores found for this student.");
-                }
-
-                var studentFullName = diems.FirstOrDefault()?.SinhVien?.HoTen;
-                var emailContent = GenerateEmailContent(studentFullName, diems);
-
-                // Send email using EmailService
-                _emailService.SendEmail(emailContent);
-
-                _logger.LogInformation($"Score report sent successfully by email to student with ID: {sinhVienId}");
-                return Ok("Score report sent successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while sending score report by email for student with ID: {sinhVienId}");
-                return StatusCode(500, "Error occurred while sending score report.");
-            }
-        }
+        // [HttpGet("SendDiemByEmail/{sinhVienId}")]
+        // public async Task<IActionResult> SendDiemByEmail(Guid sinhVienId)
+        // {
+        //     _logger.LogInformation($"Sending score report by email for student with ID: {sinhVienId}");
+        //
+        //     try
+        //     {
+        //         var diems = await _diemService.GetAllDiemBySinhVienIdAsync(sinhVienId);
+        //         if (diems == null || !diems.Any())
+        //         {
+        //             _logger.LogWarning($"No scores found for student with ID: {sinhVienId}");
+        //             return NotFound("No scores found for this student.");
+        //         }
+        //
+        //         var studentFullName = diems.FirstOrDefault()?.SinhVien?.HoTen;
+        //         var emailContent = GenerateEmailContent(studentFullName, diems);
+        //
+        //         // Send email using EmailService
+        //         _emailService.SendEmail(emailContent);
+        //
+        //         _logger.LogInformation($"Score report sent successfully by email to student with ID: {sinhVienId}");
+        //         return Ok("Score report sent successfully.");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, $"Error occurred while sending score report by email for student with ID: {sinhVienId}");
+        //         return StatusCode(500, "Error occurred while sending score report.");
+        //     }
+        // }
 
         private Message GenerateEmailContent(string studentName, IEnumerable<Diem> diems)
         {
