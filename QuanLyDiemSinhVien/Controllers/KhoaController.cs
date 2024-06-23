@@ -11,7 +11,7 @@ namespace asd123.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = UserRoles.User )]
+[Authorize(Roles = UserRoles.User )]
 public class KhoaController : ControllerBase
 {
     private readonly IKhoaService _khoaService;
