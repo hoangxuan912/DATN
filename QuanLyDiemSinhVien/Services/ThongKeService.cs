@@ -33,7 +33,6 @@ public class ThongKeService : IThongKeService
 
         if (request.KhoaId.HasValue)
         {
-            // Giả sử mỗi chuyên ngành thuộc về một khoa và bạn có liên kết từ chuyên ngành tới khoa
             query = query.Where(l => l.ChuyenNganh.MaKhoa == request.KhoaId.Value);
         }
 
@@ -60,8 +59,6 @@ public class ThongKeService : IThongKeService
 
     public async Task<IEnumerable<BaoCaoDiemResponse>> BaoCaoDiemAsync(BaoCaoDiemRequest request)
     {
-        // Giả sử bạn có một hệ thống đánh giá điểm liên kết giữa sinh viên, môn học và điểm số
-        // Code sau là giả định và phải được điều chỉnh cho phù hợp với kiến trúc của ứng dụng của bạn
         var diems = await _context.Diems
             .Where(d => d.MaMonHoc == request.MonHocId && d.SinhVien.Lop.ChuyenNganh.MaKhoa == request.KhoaHocId)
             .Select(d => new BaoCaoDiemResponse

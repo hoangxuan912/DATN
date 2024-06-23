@@ -20,7 +20,7 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.User )]
+    //[Authorize(Roles = UserRoles.User )]
     public class DiemController : ControllerBase
     {
         private readonly IDiem _diemService;
@@ -201,8 +201,37 @@ namespace asd123.Controllers
 
             return new Message(new string[] { "student-email@example.com" }, "Your Score Report", sb.ToString());
         }
-        [HttpGet("ExportDiemToExcel/{monHocId}")]
-        public async Task<IActionResult> ExportDiemToExcel(Guid monHocId)
+        [HttpGet("ExportDiemToExcelBySinhVienId/{sinhVienId}")]
+        public async Task<IActionResult> ExportDiemToExcelBySinhVienId(Guid sinhVienId)
+        {
+            _logger.LogInformation($"Exporting scores to Excel for student with ID: {sinhVienId}");
+
+            try
+            {
+                var diems = await _diemService.GetAllDiemBySinhVienIdAsync(sinhVienId);
+                if (diems == null || !diems.Any())
+                {
+                    _logger.LogWarning($"No scores found for student with ID: {sinhVienId}");
+                    return NotFound("No scores found for this student.");
+                }
+            
+                // Call method to create Excel file and return FileContentResult
+                var fileBytes = await CreateExcelFileBySinhVienId(diems);
+                var fileName = $"Diem_MonHoc_{sinhVienId}.xlsx";
+
+                _logger.LogInformation($"Score report exported to Excel successfully for student with ID: {sinhVienId}");
+        
+                // Return the Excel file as FileContentResult
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while exporting scores to Excel for student with ID: {sinhVienId}");
+                return StatusCode(500, "Error occurred while exporting scores to Excel.");
+            }
+        }
+        [HttpGet("ExportDiemToExcelByMonHocId/{monHocId}")]
+        public async Task<IActionResult> ExportDiemToExcelByMonHocId(Guid monHocId)
         {
             _logger.LogInformation($"Exporting scores to Excel for subject with ID: {monHocId}");
 
@@ -214,9 +243,9 @@ namespace asd123.Controllers
                     _logger.LogWarning($"No scores found for subject with ID: {monHocId}");
                     return NotFound("No scores found for this subject.");
                 }
-
+            
                 // Call method to create Excel file and return FileContentResult
-                var fileBytes = await CreateExcelFile(diems);
+                var fileBytes = await CreateExcelFileByMonHocId(diems);
                 var fileName = $"Diem_MonHoc_{monHocId}.xlsx";
 
                 _logger.LogInformation($"Score report exported to Excel successfully for subject with ID: {monHocId}");
@@ -232,20 +261,22 @@ namespace asd123.Controllers
         }
 
 
-        private async Task<byte[]> CreateExcelFile(IEnumerable<Diem> diems)
+        private async Task<byte[]> CreateExcelFileBySinhVienId(IEnumerable<Diem> diems)
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Scores");
 
             // Create header row
-            worksheet.Cells["A1"].Value = "Student Name";
-            worksheet.Cells["B1"].Value = "Subject";
-            worksheet.Cells["C1"].Value = "Attendance Score";
-            worksheet.Cells["D1"].Value = "Assignment Score";
-            worksheet.Cells["E1"].Value = "Lab Score";
-            worksheet.Cells["F1"].Value = "Midterm Score";
-            worksheet.Cells["G1"].Value = "Final Exam Score";
-            worksheet.Cells["H1"].Value = "Final Score";
+            worksheet.Cells["A1"].Value = "Tên sinh viên ";
+            worksheet.Cells["B1"].Value = "Môn học";
+            worksheet.Cells["C1"].Value = "Điểm chuyên cần";
+            worksheet.Cells["D1"].Value = "Điểm bài tập";
+            worksheet.Cells["E1"].Value = "Điểm bài Lab";
+            worksheet.Cells["F1"].Value = "Điểm giữa kỳ";
+            worksheet.Cells["G1"].Value = "Điểm thi cuối kỳ";
+            worksheet.Cells["H1"].Value = "Điểm tổng kết";
 
             // Fill data rows
             int row = 2;
@@ -258,7 +289,46 @@ namespace asd123.Controllers
                 worksheet.Cells[$"E{row}"].Value = diem.DiemThucHanh;
                 worksheet.Cells[$"F{row}"].Value = diem.DiemKiemTraGiuaKi;
                 worksheet.Cells[$"G{row}"].Value = diem.DiemThi;
-                worksheet.Cells[$"H{row}"].Value = diem.DiemTongKet;
+                worksheet.Cells[$"H{row}"].Value = Math.Round(diem.DiemTongKet, 2);
+
+                row++;
+            }
+
+            // Auto fit columns
+            worksheet.Cells.AutoFitColumns();
+
+            // Convert ExcelPackage to byte array
+            return await package.GetAsByteArrayAsync();
+        }
+        private async Task<byte[]> CreateExcelFileByMonHocId(IEnumerable<Diem> diems)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Scores");
+
+            // Create header row
+            worksheet.Cells["A1"].Value = "Môn học";
+            worksheet.Cells["B1"].Value = "Tên sinh viên ";
+            worksheet.Cells["C1"].Value = "Điểm chuyên cần";
+            worksheet.Cells["D1"].Value = "Điểm bài tập";
+            worksheet.Cells["E1"].Value = "Điểm bài Lab";
+            worksheet.Cells["F1"].Value = "Điểm giữa kỳ";
+            worksheet.Cells["G1"].Value = "Điểm thi cuối kỳ";
+            worksheet.Cells["H1"].Value = "Điểm tổng kết";
+
+            // Fill data rows
+            int row = 2;
+            foreach (var diem in diems)
+            {
+                worksheet.Cells[$"A{row}"].Value = diem.MonHoc?.TenMonHoc;
+                worksheet.Cells[$"B{row}"].Value = diem.SinhVien?.HoTen;
+                worksheet.Cells[$"C{row}"].Value = diem.DiemChuyenCan;
+                worksheet.Cells[$"D{row}"].Value = diem.DiemBaiTap;
+                worksheet.Cells[$"E{row}"].Value = diem.DiemThucHanh;
+                worksheet.Cells[$"F{row}"].Value = diem.DiemKiemTraGiuaKi;
+                worksheet.Cells[$"G{row}"].Value = diem.DiemThi;
+                worksheet.Cells[$"H{row}"].Value = Math.Round(diem.DiemTongKet, 2);
 
                 row++;
             }

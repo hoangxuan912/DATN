@@ -83,6 +83,8 @@ public class DiemService : IDiem
     {
         return await _context.Diems
             .Where(d => d.MaSinhVien == sinhVienId)
+            .Include(s => s.SinhVien)
+            .Include(m => m.MonHoc)
             .ToListAsync();
     }
 
@@ -90,6 +92,8 @@ public class DiemService : IDiem
     {
         return await _context.Diems
             .Where(d => d.MaMonHoc == monHocId)
+            .Include(s => s.SinhVien)
+            .Include(m => m.MonHoc)
             .ToListAsync();
     }
     public async Task<TinhDiemTBResponse> TinhDiemTBAsync(Guid sinhVienId)

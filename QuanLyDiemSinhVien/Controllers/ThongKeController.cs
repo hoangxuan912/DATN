@@ -12,7 +12,7 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = UserRoles.User )]
+    //[Authorize(Roles = UserRoles.User )]
     public class ThongKeController : ControllerBase
     {
         private readonly IThongKeService _thongKeService;
@@ -26,13 +26,13 @@ namespace asd123.Controllers
 
         // POST: api/ThongKe/ThongKeSinhVien
         [HttpPost("ThongKeSinhVien")]
-        public async Task<ActionResult<IEnumerable<ThongKeSinhVienResponse>>> ThongKeSinhVien([FromBody] ThongKeRequest request)
+        public async Task<ActionResult<IEnumerable<ThongKeSinhVienResponse>>> ThongKeSinhVien([FromBody] ThongKeRequest? request)
         {
-            if (request == null)
-            {
-                _logger.LogWarning("ThongKeRequest data is null");
-                return BadRequest("ThongKeRequest data is null");
-            }
+            // if (request == null)
+            // {
+            //     _logger.LogWarning("ThongKeRequest data is null");
+            //     return BadRequest("ThongKeRequest data is null");
+            // }
 
             try
             {
@@ -47,50 +47,50 @@ namespace asd123.Controllers
             }
         }
 
-        // POST: api/ThongKe/BaoCaoDiem
-        [HttpPost("BaoCaoDiem")]
-        public async Task<ActionResult<IEnumerable<BaoCaoDiemResponse>>> BaoCaoDiem([FromBody] BaoCaoDiemRequest request)
-        {
-            if (request == null)
-            {
-                _logger.LogWarning("BaoCaoDiemRequest data is null");
-                return BadRequest("BaoCaoDiemRequest data is null");
-            }
+        // // POST: api/ThongKe/BaoCaoDiem
+        // [HttpPost("BaoCaoDiem")]
+        // public async Task<ActionResult<IEnumerable<BaoCaoDiemResponse>>> BaoCaoDiem([FromBody] BaoCaoDiemRequest request)
+        // {
+        //     if (request == null)
+        //     {
+        //         _logger.LogWarning("BaoCaoDiemRequest data is null");
+        //         return BadRequest("BaoCaoDiemRequest data is null");
+        //     }
+        //
+        //     try
+        //     {
+        //         var response = await _thongKeService.BaoCaoDiemAsync(request);
+        //         _logger.LogInformation("BaoCaoDiem successful");
+        //         return Ok(response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error occurred while processing BaoCaoDiem");
+        //         return StatusCode(500, $"Internal server error: {ex.Message}");
+        //     }
+        // }
 
-            try
-            {
-                var response = await _thongKeService.BaoCaoDiemAsync(request);
-                _logger.LogInformation("BaoCaoDiem successful");
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while processing BaoCaoDiem");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        // POST: api/ThongKe/BaoCaoThanhTich
-        [HttpPost("BaoCaoThanhTich")]
-        public async Task<ActionResult<IEnumerable<SinhVienThanhTichResponse>>> BaoCaoThanhTich([FromBody] BaoCaoThanhTichRequest request)
-        {
-            if (request == null)
-            {
-                _logger.LogWarning("BaoCaoThanhTichRequest data is null");
-                return BadRequest("BaoCaoThanhTichRequest data is null");
-            }
-
-            try
-            {
-                var response = await _thongKeService.BaoCaoThanhTichAsync(request);
-                _logger.LogInformation("BaoCaoThanhTich successful");
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while processing BaoCaoThanhTich");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+        // // POST: api/ThongKe/BaoCaoThanhTich
+        // [HttpPost("BaoCaoThanhTich")]
+        // public async Task<ActionResult<IEnumerable<SinhVienThanhTichResponse>>> BaoCaoThanhTich([FromBody] BaoCaoThanhTichRequest request)
+        // {
+        //     if (request == null)
+        //     {
+        //         _logger.LogWarning("BaoCaoThanhTichRequest data is null");
+        //         return BadRequest("BaoCaoThanhTichRequest data is null");
+        //     }
+        //
+        //     try
+        //     {
+        //         var response = await _thongKeService.BaoCaoThanhTichAsync(request);
+        //         _logger.LogInformation("BaoCaoThanhTich successful");
+        //         return Ok(response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error occurred while processing BaoCaoThanhTich");
+        //         return StatusCode(500, $"Internal server error: {ex.Message}");
+        //     }
+        // }
     }
 }

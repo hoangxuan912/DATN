@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = UserRoles.User )]
+//[Authorize(Roles = UserRoles.User )]
 public class LopController : ControllerBase
 {
     private readonly ILop _lopService;
