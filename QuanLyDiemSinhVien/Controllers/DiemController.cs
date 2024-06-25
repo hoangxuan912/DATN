@@ -20,7 +20,7 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = UserRoles.User )]
+    [Authorize]
     public class DiemController : ControllerBase
     {
         private readonly IDiem _diemService;

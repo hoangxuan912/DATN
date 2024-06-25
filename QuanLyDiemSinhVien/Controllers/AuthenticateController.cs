@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace asd123.Controllers
@@ -70,9 +71,20 @@ namespace asd123.Controllers
             }
             return Unauthorized();
         }
-        
+        [Authorize]
+        [HttpPost]
+        [Route("logout")]
+        public IActionResult Logout()
+        {
+            // Implement any server-side logout logic here if needed, such as invalidating tokens
+            // For example, you might add the token to a blacklist
+
+            return Ok(new Response { Status = "Success", Message = "Logged out successfully!" });
+        }
+
         [HttpPost]
         [Route("register")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var userExists = await userManager.FindByNameAsync(model.Username);

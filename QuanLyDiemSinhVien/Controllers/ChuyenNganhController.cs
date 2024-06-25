@@ -9,7 +9,7 @@ namespace asd123.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize(Roles = UserRoles.User )]
+[Authorize]
 public class ChuyenNganhController : ControllerBase
 {
     private readonly IChuyenNganh _chuyenNganhService;

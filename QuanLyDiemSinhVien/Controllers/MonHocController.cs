@@ -13,7 +13,7 @@ namespace asd123.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = UserRoles.User )]
+    [Authorize]
     public class MonHocController : ControllerBase
     {
         private readonly IMonHoc _monHocService;

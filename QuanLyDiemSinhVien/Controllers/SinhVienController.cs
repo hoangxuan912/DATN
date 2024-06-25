@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = UserRoles.User )]
+[Authorize]
 public class SinhVienController : ControllerBase
 {
     private readonly ISinhVien _sinhVienService;
