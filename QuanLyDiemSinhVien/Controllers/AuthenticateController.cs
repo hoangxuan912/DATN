@@ -26,7 +26,8 @@ namespace asd123.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -61,7 +62,7 @@ namespace asd123.Controllers
                     expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                    );
+                );
 
                 return Ok(new
                 {
@@ -69,15 +70,15 @@ namespace asd123.Controllers
                     expiration = token.ValidTo
                 });
             }
+
             return Unauthorized();
         }
+
         [Authorize]
         [HttpPost]
         [Route("logout")]
         public IActionResult Logout()
         {
-            // For example, you might add the token to a blacklist
-
             return Ok(new Response { Status = "Success", Message = "Logged out successfully!" });
         }
 
@@ -88,7 +89,8 @@ namespace asd123.Controllers
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
             if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Response { Status = "Error", Message = "User already exists!" });
 
             ApplicationUser user = new ApplicationUser()
             {
@@ -99,7 +101,11 @@ namespace asd123.Controllers
 
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Response
+                    {
+                        Status = "Error", Message = "User creation failed! Please check user details and try again."
+                    });
 
             // Check if any users exist
             var usersCount = await userManager.Users.CountAsync();
@@ -121,8 +127,6 @@ namespace asd123.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
-        
-        
 
         // [HttpPost]
         // [Route("register")]
