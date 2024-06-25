@@ -76,7 +76,6 @@ namespace asd123.Controllers
         [Route("logout")]
         public IActionResult Logout()
         {
-            // Implement any server-side logout logic here if needed, such as invalidating tokens
             // For example, you might add the token to a blacklist
 
             return Ok(new Response { Status = "Success", Message = "Logged out successfully!" });
