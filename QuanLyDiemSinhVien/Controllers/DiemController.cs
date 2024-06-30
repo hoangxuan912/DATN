@@ -100,6 +100,7 @@ namespace asd123.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
+        
 
         // PUT: api/Diem/UpdateDiem
         [HttpPut("UpdateDiem")]
