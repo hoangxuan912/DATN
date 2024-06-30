@@ -28,7 +28,7 @@ namespace asd123.Controllers
         private readonly ILogger<DiemController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public DiemController(IDiem diemService,  ILogger<DiemController> logger,ApplicationDbContext ctx)
+        public DiemController(IDiem diemService, ILogger<DiemController> logger, ApplicationDbContext ctx)
         {
             _diemService = diemService;
             _logger = logger;
@@ -37,7 +37,8 @@ namespace asd123.Controllers
 
         // POST: api/Diem/NhapDiem
         [HttpPost("NhapDiem")]
-        public async Task<ActionResult<NhapDiemResponse>> NhapDiem(Guid sinhVienId, Guid monHocId, [FromBody] DiemDTO diemDTO)
+        public async Task<ActionResult<NhapDiemResponse>> NhapDiem(Guid sinhVienId, Guid monHocId,
+            [FromBody] DiemDTO diemDTO)
         {
             _logger.LogInformation($"Starting NhapDiem for SinhVienId: {sinhVienId}, MonHocId: {monHocId}");
 
@@ -66,64 +67,40 @@ namespace asd123.Controllers
             }
         }
 
-        
-        [HttpPost("TaoDiem/{lopId}/{monHocId}")]
-    public async Task<IActionResult> TaoDiem(Guid lopId, Guid monHocId, List<DiemDTO> sinhVienDiemDTOs)
-    {
-        try
+// POST: api/Diem/NhapDiemForClass
+        [HttpPost("NhapDiemForClass")]
+        public async Task<ActionResult> NhapDiemForClass([FromBody] NhapDiemForClassDTO nhapDiemForClassDTO)
         {
-            foreach (var sinhVienDiemDTO in sinhVienDiemDTOs)
+            _logger.LogInformation($"Starting NhapDiemForClass for MonHocId: {nhapDiemForClassDTO.MonHocId}");
+
+            if (nhapDiemForClassDTO == null || nhapDiemForClassDTO.StudentScores == null ||
+                !nhapDiemForClassDTO.StudentScores.Any())
             {
-                // Lấy sinh viên từ lớp đó dựa trên ID
-                SinhVien sinhVien = await _context.SinhViens.FirstOrDefaultAsync(sv => sv.MaLop == lopId && sv.Id == sinhVienDiemDTO.SinhVienId);
-
-                if (sinhVien == null)
-                {
-                    return NotFound($"Không tìm thấy sinh viên với ID: {sinhVienDiemDTO.SinhVienId} trong lớp có ID: {lopId}");
-                }
-
-                Diem diem = await _context.Diems.FirstOrDefaultAsync(d => d.MaSinhVien == sinhVienDiemDTO.SinhVienId && d.MaMonHoc == monHocId);
-
-                if (diem == null)
-                {
-                    diem = new Diem
-                    {
-                        MaSinhVien = sinhVienDiemDTO.SinhVienId,
-                        MaMonHoc = monHocId,
-                        DiemChuyenCan = sinhVienDiemDTO.DiemChuyenCan,
-                        DiemBaiTap = sinhVienDiemDTO.DiemBaiTap,
-                        DiemThucHanh = sinhVienDiemDTO.DiemThucHanh,
-                        DiemKiemTraGiuaKi = sinhVienDiemDTO.DiemKiemTraGiuaKi,
-                        DiemThi = sinhVienDiemDTO.DiemThi
-                    };
-
-                    _context.Diems.Add(diem);
-                }
-                else
-                {
-                    diem.DiemChuyenCan = sinhVienDiemDTO.DiemChuyenCan;
-                    diem.DiemBaiTap = sinhVienDiemDTO.DiemBaiTap;
-                    diem.DiemThucHanh = sinhVienDiemDTO.DiemThucHanh;
-                    diem.DiemKiemTraGiuaKi = sinhVienDiemDTO.DiemKiemTraGiuaKi;
-                    diem.DiemThi = sinhVienDiemDTO.DiemThi;
-
-                    _context.Diems.Update(diem);
-                }
+                _logger.LogWarning("NhapDiemForClassDTO data is null or empty");
+                return BadRequest("NhapDiemForClassDTO data is null or empty");
             }
 
-            // Lưu thay đổi vào cơ sở dữ liệu
-            await _context.SaveChangesAsync();
+            try
+            {
+                var result = await _diemService.NhapDiemForClassAsync(nhapDiemForClassDTO.MonHocId,
+                    nhapDiemForClassDTO.StudentScores);
+                if (!result)
+                {
+                    _logger.LogWarning($"Khong the nhap diem for MonHocId: {nhapDiemForClassDTO.MonHocId}");
+                    return NotFound("Khong the nhap diem.");
+                }
 
-            return Ok("Đã tạo điểm cho tất cả sinh viên trong lớp thành công.");
+                _logger.LogInformation("NhapDiemForClass successfully completed.");
+                return Ok(new
+                    { Status = "Success", Message = "Diem entered successfully for all students in the class." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while NhapDiemForClass.");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Lỗi: {ex.Message}");
-        }
-    }
-        
-        
-        
+
         // PUT: api/Diem/UpdateDiem
         [HttpPut("UpdateDiem")]
         public async Task<IActionResult> UpdateDiem(Guid sinhVienId, Guid monHocId, [FromBody] DiemDTO diemDTO)
@@ -262,6 +239,7 @@ namespace asd123.Controllers
 
             return new Message(new string[] { "student-email@example.com" }, "Your Score Report", sb.ToString());
         }
+
         [HttpGet("ExportDiemToExcelBySinhVienId/{sinhVienId}")]
         public async Task<IActionResult> ExportDiemToExcelBySinhVienId(Guid sinhVienId)
         {
@@ -275,22 +253,25 @@ namespace asd123.Controllers
                     _logger.LogWarning($"No scores found for student with ID: {sinhVienId}");
                     return NotFound("No scores found for this student.");
                 }
-            
+
                 // Call method to create Excel file and return FileContentResult
                 var fileBytes = await CreateExcelFileBySinhVienId(diems);
                 var fileName = $"Diem_MonHoc_{sinhVienId}.xlsx";
 
-                _logger.LogInformation($"Score report exported to Excel successfully for student with ID: {sinhVienId}");
-        
+                _logger.LogInformation(
+                    $"Score report exported to Excel successfully for student with ID: {sinhVienId}");
+
                 // Return the Excel file as FileContentResult
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while exporting scores to Excel for student with ID: {sinhVienId}");
+                _logger.LogError(ex,
+                    $"Error occurred while exporting scores to Excel for student with ID: {sinhVienId}");
                 return StatusCode(500, "Error occurred while exporting scores to Excel.");
             }
         }
+
         [HttpGet("ExportDiemToExcelByMonHocId/{monHocId}")]
         public async Task<IActionResult> ExportDiemToExcelByMonHocId(Guid monHocId)
         {
@@ -304,13 +285,13 @@ namespace asd123.Controllers
                     _logger.LogWarning($"No scores found for subject with ID: {monHocId}");
                     return NotFound("No scores found for this subject.");
                 }
-            
+
                 // Call method to create Excel file and return FileContentResult
                 var fileBytes = await CreateExcelFileByMonHocId(diems);
                 var fileName = $"Diem_MonHoc_{monHocId}.xlsx";
 
                 _logger.LogInformation($"Score report exported to Excel successfully for subject with ID: {monHocId}");
-        
+
                 // Return the Excel file as FileContentResult
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
@@ -361,6 +342,7 @@ namespace asd123.Controllers
             // Convert ExcelPackage to byte array
             return await package.GetAsByteArrayAsync();
         }
+
         private async Task<byte[]> CreateExcelFileByMonHocId(IEnumerable<Diem> diems)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -400,9 +382,5 @@ namespace asd123.Controllers
             // Convert ExcelPackage to byte array
             return await package.GetAsByteArrayAsync();
         }
-
-
     }
-
-    
 }

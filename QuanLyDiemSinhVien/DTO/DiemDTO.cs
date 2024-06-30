@@ -1,10 +1,15 @@
 namespace asd123.DTO;
 
-public class NhapDiemRequest
+public class NhapDiemForClassDTO
 {
-    public Guid SinhVienId { get; set; } // ID của sinh viên
-    public Guid monHocId { get; set; } 
-    public List<DiemDTO> DiemDTOList { get; set; } // Danh sách điểm của sinh viên (có thể nhập nhiều điểm)
+    public Guid MonHocId { get; set; }
+    public List<StudentScoreDTO> StudentScores { get; set; }
+}
+
+public class StudentScoreDTO
+{
+    public Guid SinhVienId { get; set; }
+    public DiemDTO Diem { get; set; }
 }
 
 public class DiemDTO

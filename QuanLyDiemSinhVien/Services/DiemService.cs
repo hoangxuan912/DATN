@@ -15,6 +15,7 @@ public interface IDiem
     Task<IEnumerable<Diem>> GetAllDiemBySinhVienIdAsync(Guid sinhVienId);
     Task<IEnumerable<Diem>> GetAllDiemByMonHocIdAsync(Guid monHocId);
     Task<TinhDiemTBResponse> TinhDiemTBAsync(Guid sinhVienId);
+    Task<bool> NhapDiemForClassAsync(Guid monHocId, List<StudentScoreDTO> studentScores);
 }
 
 public class DiemService : IDiem
@@ -25,6 +26,7 @@ public class DiemService : IDiem
     {
         _context = context;
     }
+
     public async Task<NhapDiemResponse> NhapDiemAsync(Guid sinhVienId, Guid monHocId, DiemDTO diemDTO)
     {
         // Tạo một thực thể Diem mới dựa trên DiemDTO
@@ -49,10 +51,12 @@ public class DiemService : IDiem
             Diem = diemDTO
         };
     }
+
     public async Task UpdateDiemAsync(Guid sinhVienId, Guid monHocId, DiemDTO diemDTO)
     {
         // Tìm Diem cụ thể bằng SinhVienId và MonHocId
-        var existingDiem = await _context.Diems.FirstOrDefaultAsync(d => d.MaSinhVien == sinhVienId && d.MaMonHoc == monHocId);
+        var existingDiem =
+            await _context.Diems.FirstOrDefaultAsync(d => d.MaSinhVien == sinhVienId && d.MaMonHoc == monHocId);
 
         // Cập nhật thông tin điểm
         if (existingDiem != null)
@@ -67,6 +71,7 @@ public class DiemService : IDiem
             await _context.SaveChangesAsync();
         }
     }
+
     public async Task DeleteDiemAsync(Guid sinhVienId, Guid monHocId)
     {
         var diemToRemove = await _context.Diems
@@ -96,6 +101,7 @@ public class DiemService : IDiem
             .Include(m => m.MonHoc)
             .ToListAsync();
     }
+
     public async Task<TinhDiemTBResponse> TinhDiemTBAsync(Guid sinhVienId)
     {
         // Giả định rằng chúng ta đã có một phương thức để tính điểm trung bình
@@ -113,6 +119,7 @@ public class DiemService : IDiem
             DiemTrungBinhMon = diemTB.HasValue ? diemTB.Value : 0
         };
     }
+
     private float? CalculateDiemTB(IEnumerable<Diem> diems)
     {
         if (diems == null || !diems.Any())
@@ -170,5 +177,35 @@ public class DiemService : IDiem
         }
     }
 
-    
+    public async Task<bool> NhapDiemForClassAsync(Guid monHocId, List<StudentScoreDTO> studentScores)
+    {
+        foreach (var studentScore in studentScores)
+        {
+            var sinhVienId = studentScore.SinhVienId;
+            var diemDTO = studentScore.Diem;
+
+            var sinhVien = await _context.SinhViens.FindAsync(sinhVienId);
+            var monHoc = await _context.MonHocs.FindAsync(monHocId);
+            if (sinhVien == null || monHoc == null)
+            {
+                continue; // Skip if student or subject not found
+            }
+
+            var diem = new Diem
+            {
+                MaSinhVien = sinhVienId,
+                MaMonHoc = monHocId,
+                DiemChuyenCan = diemDTO.DiemChuyenCan,
+                DiemBaiTap = diemDTO.DiemBaiTap,
+                DiemThucHanh = diemDTO.DiemThucHanh,
+                DiemKiemTraGiuaKi = diemDTO.DiemKiemTraGiuaKi,
+                DiemThi = diemDTO.DiemThi,
+            };
+
+            _context.Diems.Add(diem);
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
