@@ -14,6 +14,7 @@ using asd123.Services;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 namespace asd123.Controllers
@@ -25,11 +26,13 @@ namespace asd123.Controllers
     {
         private readonly IDiem _diemService;
         private readonly ILogger<DiemController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public DiemController(IDiem diemService,  ILogger<DiemController> logger)
+        public DiemController(IDiem diemService,  ILogger<DiemController> logger,ApplicationDbContext ctx)
         {
             _diemService = diemService;
             _logger = logger;
+            _context = ctx;
         }
 
         // POST: api/Diem/NhapDiem
@@ -63,6 +66,64 @@ namespace asd123.Controllers
             }
         }
 
+        
+        [HttpPost("TaoDiem/{lopId}/{monHocId}")]
+    public async Task<IActionResult> TaoDiem(Guid lopId, Guid monHocId, List<DiemDTO> sinhVienDiemDTOs)
+    {
+        try
+        {
+            foreach (var sinhVienDiemDTO in sinhVienDiemDTOs)
+            {
+                // Lấy sinh viên từ lớp đó dựa trên ID
+                SinhVien sinhVien = await _context.SinhViens.FirstOrDefaultAsync(sv => sv.MaLop == lopId && sv.Id == sinhVienDiemDTO.SinhVienId);
+
+                if (sinhVien == null)
+                {
+                    return NotFound($"Không tìm thấy sinh viên với ID: {sinhVienDiemDTO.SinhVienId} trong lớp có ID: {lopId}");
+                }
+
+                Diem diem = await _context.Diems.FirstOrDefaultAsync(d => d.MaSinhVien == sinhVienDiemDTO.SinhVienId && d.MaMonHoc == monHocId);
+
+                if (diem == null)
+                {
+                    diem = new Diem
+                    {
+                        MaSinhVien = sinhVienDiemDTO.SinhVienId,
+                        MaMonHoc = monHocId,
+                        DiemChuyenCan = sinhVienDiemDTO.DiemChuyenCan,
+                        DiemBaiTap = sinhVienDiemDTO.DiemBaiTap,
+                        DiemThucHanh = sinhVienDiemDTO.DiemThucHanh,
+                        DiemKiemTraGiuaKi = sinhVienDiemDTO.DiemKiemTraGiuaKi,
+                        DiemThi = sinhVienDiemDTO.DiemThi
+                    };
+
+                    _context.Diems.Add(diem);
+                }
+                else
+                {
+                    diem.DiemChuyenCan = sinhVienDiemDTO.DiemChuyenCan;
+                    diem.DiemBaiTap = sinhVienDiemDTO.DiemBaiTap;
+                    diem.DiemThucHanh = sinhVienDiemDTO.DiemThucHanh;
+                    diem.DiemKiemTraGiuaKi = sinhVienDiemDTO.DiemKiemTraGiuaKi;
+                    diem.DiemThi = sinhVienDiemDTO.DiemThi;
+
+                    _context.Diems.Update(diem);
+                }
+            }
+
+            // Lưu thay đổi vào cơ sở dữ liệu
+            await _context.SaveChangesAsync();
+
+            return Ok("Đã tạo điểm cho tất cả sinh viên trong lớp thành công.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Lỗi: {ex.Message}");
+        }
+    }
+        
+        
+        
         // PUT: api/Diem/UpdateDiem
         [HttpPut("UpdateDiem")]
         public async Task<IActionResult> UpdateDiem(Guid sinhVienId, Guid monHocId, [FromBody] DiemDTO diemDTO)
@@ -342,4 +403,6 @@ namespace asd123.Controllers
 
 
     }
+
+    
 }
